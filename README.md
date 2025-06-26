@@ -10,16 +10,45 @@
 
 ## API Server
 
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- GET `/api/something`
-  - request parameters
-  - response body content
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- ...
+- POST `/api/login`
+  - Request body: `{ name: string, password: string }`
+  - Response body (success): `{ id, name, role }`
+  - Response body (failure): `{ error: "Invalid credentials" }`
+
+- POST `/api/logout`
+  - No parameters
+  - Response body: `204 No Content`
+
+- GET `/api/sessions/current`
+  - No parameters
+  - Response body: `{ id, name, role }` if logged in, or `401 Unauthorized`
+
+- GET `/api/assignments` (for teacher)
+  - Requires session and teacher role
+  - Response body: array of assignments created by the teacher
+
+- GET `/api/assignments` (for student)
+  - Requires session and student role
+  - Response body: array of assignments assigned to the student (group member)
+
+- POST `/api/assignments`
+  - Requires session and teacher role
+  - Request body: `{ question: string, groupMembers: array of student IDs }`
+  - Response body: `{ id: number }` newly created assignment ID, or error if validation fails
+
+- PUT `/api/assignments/:id/answer`
+  - Requires session and student role
+  - Request body: `{ answer: string }`
+  - Response body: `204 No Content`, or error if not in group or already answered
+
+- PUT `/api/assignments/:id/evaluate`
+  - Requires session and teacher role
+  - Request body: `{ score: number (0-30) }`
+  - Response body: `204 No Content`, or error if assignment not found or invalid state
+
+- GET `/api/assignments/:id`
+  - Requires authentication
+  - Response body: full assignment data if requester is creator or group member
 
 ## Database Tables
 
