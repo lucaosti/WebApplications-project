@@ -23,9 +23,26 @@
 
 ## Database Tables
 
-- Table `users` - contains xx yy zz
-- Table `something` - contains ww qq ss
-- ...
+- Table `Users` – stores all system users (students and teachers). Fields:
+  - `id` (INTEGER, PK): unique identifier
+  - `name` (TEXT, UNIQUE): login name
+  - `role` (TEXT): must be either 'student' or 'teacher'
+  - `passwordHash` (TEXT): hashed + salted password
+
+- Table `Assignments` – stores all assignments created by teachers. Fields:
+  - `id` (INTEGER, PK)
+  - `teacherId` (INTEGER, FK to Users.id)
+  - `question` (TEXT): the assignment question
+  - `createdAt` (DATETIME): when the assignment was posted
+  - `answer` (TEXT or NULL): the response submitted by students
+  - `submittedAt` (DATETIME or NULL): when the answer was submitted
+  - `score` (INTEGER or NULL): assigned score, from 0 to 30
+  - `evaluatedAt` (DATETIME or NULL): when the teacher evaluated it
+
+- Table `GroupMembers` – links students to assignments (many-to-many). Fields:
+  - `assignmentId` (INTEGER, FK to Assignments.id)
+  - `studentId` (INTEGER, FK to Users.id)
+  - Composite PK on (assignmentId, studentId)
 
 ## Main React Components
 
