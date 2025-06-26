@@ -8,3 +8,6 @@ Desktop.ini
 
 # utilities
 AW1_esame2_Compiti.pdf
+
+# database
+*.sqlite
