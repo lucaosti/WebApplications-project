@@ -87,5 +87,9 @@
 
 ## Users Credentials
 
-- username, password (plus any other requested info)
-- username, password (plus any other requested info)
+- matilde, "password" (Teacher)
+- lorenzo, "password" (Teacher)
+- vittoria, "password" (Teacher)
+- alessandro, "password" (Student)
+- andrea, "password" (Student)
+- ginevra, "password" (Student)
