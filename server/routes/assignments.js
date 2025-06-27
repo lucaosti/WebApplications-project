@@ -1,124 +1,161 @@
-const express = require('express');
-const assignmentsDao = require('../dao/assignmentsDao');
-const groupDao = require('../dao/groupMembersDao');
-const { isLoggedIn, isTeacher, isStudent } = require('../middlewares/auth');
+import express from 'express';
+import {
+  getAssignmentsByTeacher,
+  getAssignmentsForStudent,
+  getAssignmentById,
+  createAssignment,
+  updateAnswer,
+  evaluateAssignment
+} from '../dao/assignmentsDao.js';
+
+import {
+  addGroupMembers,
+  getGroupMembers
+} from '../dao/groupMembersDao.js';
+
+import {
+  isLoggedIn,
+  isTeacher,
+  isStudent
+} from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// GET /api/assignments (for the current user)
+/**
+ * Get assignments for the current user.
+ * Students get theirs; teachers get the ones they created.
+ */
 router.get('/assignments', isLoggedIn, async (req, res) => {
   try {
-    if (req.user.role === 'teacher') {
-      const assignments = await assignmentsDao.getAssignmentsByTeacher(req.user.id);
+    if (req.user.role === 'student') {
+      const assignments = await getAssignmentsForStudent(req.user.id);
       res.json(assignments);
-    } else if (req.user.role === 'student') {
-      const assignments = await assignmentsDao.getAssignmentsForStudent(req.user.id);
+    } else if (req.user.role === 'teacher') {
+      const assignments = await getAssignmentsByTeacher(req.user.id);
       res.json(assignments);
     } else {
-      res.status(403).json({ error: 'Unknown role' });
+      res.status(403).json({ error: 'Invalid role' });
     }
   } catch (err) {
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ error: 'Failed to fetch assignments' });
   }
 });
 
-// POST /api/assignments (teacher only)
-router.post('/assignments', isLoggedIn, isTeacher, async (req, res) => {
+/**
+ * Get details of a specific assignment.
+ */
+router.get('/assignments/:id', isLoggedIn, async (req, res) => {
   try {
-    const { question, group } = req.body;
-
-    if (!Array.isArray(group) || group.length < 2 || group.length > 6)
-      return res.status(422).json({ error: 'Group size must be between 2 and 6' });
-
-    // Check student pair limits
-    for (let i = 0; i < group.length; i++) {
-      for (let j = i + 1; j < group.length; j++) {
-        const s1 = group[i];
-        const s2 = group[j];
-        const result = await groupDao.countGroupParticipations(req.user.id, s1, s2);
-        if (result.count >= 2) {
-          return res.status(422).json({ error: `Students ${s1} and ${s2} have already been grouped twice.` });
-        }
-      }
-    }
-
-    const assignmentId = await assignmentsDao.createAssignment({
-      teacherId: req.user.id,
-      question
-    });
-    await groupDao.addGroupMembers(assignmentId, group);
-    res.status(201).json({ id: assignmentId });
-  } catch (err) {
-    res.status(500).json({ error: 'Database error' });
-  }
-});
-
-// PUT /api/assignments/:id/answer (student only)
-router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) => {
-  try {
-    const assignmentId = parseInt(req.params.id);
-    const { answer } = req.body;
-    if (!answer) return res.status(400).json({ error: 'Missing answer text' });
-
-    const group = await groupDao.getGroupMembers(assignmentId);
-    const isInGroup = group.some(member => member.studentId === req.user.id);
-    if (!isInGroup) return res.status(403).json({ error: 'You are not part of this group' });
-
-    await assignmentsDao.updateAnswer(assignmentId, answer);
-    res.status(200).json({ message: 'Answer submitted' });
-  } catch (err) {
-    res.status(500).json({ error: 'Database error' });
-  }
-});
-
-// PUT /api/assignments/:id/grade (teacher only)
-router.put('/assignments/:id/grade', isLoggedIn, isTeacher, async (req, res) => {
-  try {
-    const assignmentId = parseInt(req.params.id);
-    const { score } = req.body;
-    if (score == null || score < 0 || score > 30)
-      return res.status(400).json({ error: 'Score must be between 0 and 30' });
-
-    const assignment = await assignmentsDao.getAssignmentById(assignmentId);
-    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
-    if (assignment.teacherId !== req.user.id)
-      return res.status(403).json({ error: 'Not your assignment' });
-    if (assignment.evaluatedAt) {
-      return res.status(400).json({ error: 'Assignment already evaluated' });
-    }
-
-    await assignmentsDao.evaluateAssignment(assignmentId, score);
-    res.status(200).json({ message: 'Assignment evaluated' });
-  } catch (err) {
-    res.status(500).json({ error: 'Database error' });
-  }
-});
-
-// GET /api/assignments/:id/group (logged-in users only)
-router.get('/assignments/:id/group', isLoggedIn, async (req, res) => {
-  try {
-    const assignmentId = parseInt(req.params.id);
-    const assignment = await assignmentsDao.getAssignmentById(assignmentId);
+    const assignment = await getAssignmentById(req.params.id);
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
-    // Only teacher who created it or a group member can view
+    // Basic role-based access
     if (
-      req.user.role === 'teacher' && 
-      assignment.teacherId !== req.user.id ||
-      req.user.role === 'student'
+      (req.user.role === 'teacher' && assignment.teacherId !== req.user.id) ||
+      (req.user.role === 'student' &&
+        !(await getGroupMembers(assignment.id)).some(m => m.studentId === req.user.id))
     ) {
-      const group = await groupDao.getGroupMembers(assignmentId);
-      const isInGroup = group.some(member => member.studentId === req.user.id);
-      if (!isInGroup && req.user.role === 'student') {
-        return res.status(403).json({ error: 'You are not part of this group' });
-      }
+      return res.status(403).json({ error: 'Forbidden' });
     }
 
-    const group = await groupDao.getGroupMembers(assignmentId);
-    res.json(group);
+    res.json(assignment);
   } catch (err) {
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ error: 'Failed to fetch assignment' });
   }
 });
 
-module.exports = router;
+/**
+ * Create a new assignment (teacher only).
+ */
+router.post('/assignments', isLoggedIn, isTeacher, async (req, res) => {
+  const { question } = req.body;
+  if (!question) return res.status(400).json({ error: 'Missing question text' });
+
+  try {
+    const id = await createAssignment({ teacherId: req.user.id, question });
+    res.status(201).json({ id });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create assignment' });
+  }
+});
+
+/**
+ * Assign students to a group (teacher only).
+ */
+router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) => {
+  const { studentIds } = req.body;
+  if (!Array.isArray(studentIds) || studentIds.length === 0)
+    return res.status(400).json({ error: 'Missing or invalid student list' });
+
+  try {
+    const assignment = await getAssignmentById(req.params.id);
+    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+
+    if (assignment.teacherId !== req.user.id)
+      return res.status(403).json({ error: 'Forbidden: not your assignment' });
+
+    if (assignment.status !== 'open')
+      return res.status(400).json({ error: 'Assignment is closed' });
+
+    await addGroupMembers(assignment.id, studentIds);
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to assign group' });
+  }
+});
+
+/**
+ * Submit or update the answer (student only).
+ */
+router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) => {
+  const { answer } = req.body;
+  if (!answer) return res.status(400).json({ error: 'Missing answer' });
+
+  try {
+    const assignment = await getAssignmentById(req.params.id);
+    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+
+    const members = await getGroupMembers(assignment.id);
+    const isInGroup = members.some(m => m.studentId === req.user.id);
+
+    if (!isInGroup)
+      return res.status(403).json({ error: 'You are not in this assignment group' });
+
+    if (assignment.status !== 'open')
+      return res.status(400).json({ error: 'Assignment is closed' });
+
+    await updateAnswer(assignment.id, answer);
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to submit answer' });
+  }
+});
+
+/**
+ * Evaluate and close an assignment (teacher only).
+ */
+router.put('/assignments/:id/evaluate', isLoggedIn, isTeacher, async (req, res) => {
+  const { score } = req.body;
+  const numericScore = Number(score);
+
+  if (!Number.isInteger(numericScore) || numericScore < 0 || numericScore > 30)
+    return res.status(400).json({ error: 'Score must be an integer between 0 and 30' });
+
+  try {
+    const assignment = await getAssignmentById(req.params.id);
+    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+
+    if (assignment.teacherId !== req.user.id)
+      return res.status(403).json({ error: 'Forbidden: not your assignment' });
+
+    if (assignment.status !== 'open')
+      return res.status(400).json({ error: 'Assignment already closed' });
+
+    await evaluateAssignment(assignment.id, numericScore);
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to evaluate assignment' });
+  }
+});
+
+export default router;

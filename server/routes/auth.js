@@ -1,31 +1,41 @@
-const express = require('express');
-const passport = require('passport');
+import express from 'express';
+import passport from 'passport';
 
 const router = express.Router();
 
-// POST /api/login
-// Logs in the user using Passport local strategy
+/**
+ * Route for logging in.
+ * Uses Passport local strategy.
+ */
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);
-    if (!user) return res.status(401).json({ error: info.message });
+
+    if (!user) {
+      return res.status(401).json({ error: info?.message || 'Login failed' });
+    }
 
     req.login(user, (err) => {
       if (err) return next(err);
-      return res.json(user);
+
+      // Return basic user info
+      return res.json({
+        id: user.id,
+        name: user.name,
+        role: user.role
+      });
     });
   })(req, res, next);
 });
 
-// POST /api/logout
-// Logs out the current user and destroys the session
+/**
+ * Route for logging out the current user.
+ */
 router.post('/logout', (req, res) => {
   req.logout((err) => {
     if (err) return res.status(500).json({ error: 'Logout failed' });
-    req.session.destroy(() => {
-      res.status(204).end();
-    });
+    res.status(200).json({ message: 'Logged out successfully' });
   });
 });
 
-module.exports = router;
+export default router;

@@ -1,7 +1,7 @@
 /**
- * Middleware to ensure user is logged in.
+ * Middleware to ensure user is authenticated.
  */
-function isLoggedIn(req, res, next) {
+export function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
@@ -9,9 +9,9 @@ function isLoggedIn(req, res, next) {
 }
 
 /**
- * Middleware to ensure user is a teacher.
+ * Middleware to ensure user has teacher role.
  */
-function isTeacher(req, res, next) {
+export function isTeacher(req, res, next) {
   if (req.user?.role === 'teacher') {
     return next();
   }
@@ -19,17 +19,11 @@ function isTeacher(req, res, next) {
 }
 
 /**
- * Middleware to ensure user is a student.
+ * Middleware to ensure user has student role.
  */
-function isStudent(req, res, next) {
+export function isStudent(req, res, next) {
   if (req.user?.role === 'student') {
     return next();
   }
   return res.status(403).json({ error: 'Forbidden: students only' });
 }
-
-module.exports = {
-  isLoggedIn,
-  isTeacher,
-  isStudent
-};
