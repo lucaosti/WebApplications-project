@@ -160,31 +160,38 @@ export default function AssignmentView() {
               </div>
             </div>
 
-            {assignment.status === 'closed' ? (
-              <div className="form-group">
-                <p><strong>Score (0–30):</strong> {assignment.score || 'Not evaluated yet'}</p>
-                <p className="text-muted"><em>This assignment is closed and cannot be re-evaluated.</em></p>
-              </div>
-            ) : (
-              <form onSubmit={handleEvaluate}>
+            {/* Show evaluation section only if an answer has been submitted */}
+            {assignment.answer ? (
+              assignment.status === 'closed' ? (
                 <div className="form-group">
-                  <label>Score (0–30):</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="30"
-                    value={score}
-                    onChange={(e) => setScore(e.target.value)}
-                    placeholder="Enter score from 0 to 30"
-                    required
-                  />
+                  <p><strong>Score (0–30):</strong> {assignment.score || 'Not evaluated yet'}</p>
+                  <p className="text-muted"><em>This assignment is closed and cannot be re-evaluated.</em></p>
                 </div>
-                <div className="form-actions">
-                  <button type="submit" className="primary-button">
-                    Evaluate
-                  </button>
-                </div>
-              </form>
+              ) : (
+                <form onSubmit={handleEvaluate}>
+                  <div className="form-group">
+                    <label>Score (0–30):</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="30"
+                      value={score}
+                      onChange={(e) => setScore(e.target.value)}
+                      placeholder="Enter score from 0 to 30"
+                      required
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button type="submit" className="primary-button">
+                      Evaluate
+                    </button>
+                  </div>
+                </form>
+              )
+            ) : (
+              <div className="form-group">
+                <p className="text-muted"><em>Evaluation will be available after students submit an answer.</em></p>
+              </div>
             )}
           </div>
         )}
