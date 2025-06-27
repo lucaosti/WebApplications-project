@@ -1,42 +1,118 @@
+/* Layout base */
 #root {
-  max-width: 1280px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Typography */
+h2 {
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h4 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+/* Login form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-top: 1em;
+  max-width: 400px;
+  margin-inline: auto;
+}
+
+.login-form input {
+  padding: 0.5em;
+  font-size: 1em;
+}
+
+/* Assignment list */
+.assignment-list {
+  list-style: none;
+  padding: 0;
+  margin: 1em 0;
+}
+
+.assignment-card {
+  border: 1px solid #ccc;
+  padding: 1em;
+  margin-bottom: 0.75em;
+  border-radius: 6px;
+  text-align: left;
+}
+
+/* Dashboard inputs */
+.dashboard input,
+.dashboard textarea,
+.dashboard button {
+  display: block;
+  margin-top: 0.5em;
+  padding: 0.5em;
+  font-size: 1em;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* View assignment */
+.assignment-view {
+  text-align: left;
+  margin-top: 1em;
+}
+
+.assignment-view textarea {
+  min-height: 100px;
+}
+
+/* Buttons */
+button {
+  background-color: #3478f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.error {
+  color: red;
+  margin-top: 1em;
+}
+
+/* Misc forms */
+form {
+  margin-top: 1em;
+}
+
+/* Class status table (TeacherDashboard) */
+.class-status-table {
+  width: 100%;
+  margin-top: 1em;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.class-status-table th,
+.class-status-table td {
+  border: 1px solid #ccc;
+  padding: 0.6em;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.class-status-table th {
+  background-color: #f2f2f2;
 }
