@@ -11,3 +11,5 @@ AW1_esame2_Compiti.pdf
 
 # database
 *.sqlite
+
+package-lock.json

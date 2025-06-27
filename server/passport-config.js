@@ -9,38 +9,43 @@ import * as usersDao from './dao/usersDao.js';
  * @param {Object} passport - The Passport instance
  */
 function configurePassport(passport) {
-  // Configure the LocalStrategy (username = name field)
-  passport.use(new LocalStrategy(async (username, password, done) => {
-    try {
-      // Look up the user by name
-      const user = await usersDao.getUserByName(username);
-      if (!user)
-        return done(null, false, { message: 'Incorrect username.' });
+  passport.use(new LocalStrategy(
+    { usernameField: 'name' },
+    async (username, password, done) => {
+      try {
+        // Attempt login
+        const user = await usersDao.getUserByName(username);
 
-      // Compare password with hashed password
-      const match = await bcrypt.compare(password, user.passwordHash);
-      if (!match)
-        return done(null, false, { message: 'Incorrect password.' });
+        if (!user) {
+          console.log(`Login failed: unknown username "${username}"`);
+          return done(null, false, { message: 'Incorrect username.' });
+        }
 
-      // Authentication successful
-      return done(null, user);
-    } catch (err) {
-      return done(err);
+        const match = await bcrypt.compare(password, user.passwordHash);
+        if (!match) {
+          console.log(`Login failed: password mismatch for user "${username}"`);
+          return done(null, false, { message: 'Incorrect password.' });
+        }
+
+        console.log(`Login success for user "${username}" (${user.role})`);
+        return done(null, user);
+      } catch (err) {
+        console.error('Error during authentication:', err);
+        return done(err);
+      }
     }
-  }));
+  ));
 
-  // Serialize user: store user ID in session
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
-  // Deserialize user: retrieve full user object from ID
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await usersDao.getUserById(id);
       done(null, user);
     } catch (err) {
-      done(err, null);
+      done(err);
     }
   });
 }
