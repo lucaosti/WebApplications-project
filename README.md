@@ -4,9 +4,11 @@
 
 ## React Client Application Routes
 
-- Route `/`: page content and purpose
-- Route `/something/:param`: page content and purpose, param specification
-- ...
+- Route `/`: Login page with centered authentication form
+- Route `/teacher/dashboard`: Teacher's main dashboard showing assignments and class statistics  
+- Route `/student/dashboard`: Student's personal dashboard with assigned tasks and progress
+- Route `/teacher/create`: Form for creating new assignments and selecting group members
+- Route `/assignment/:id`: Detailed view of a specific assignment (view/edit for students, evaluation for teachers)
 
 ## API Server
 
@@ -25,30 +27,47 @@
 
 - GET `/api/assignments` (for teacher)
   - Requires session and teacher role
-  - Response body: array of assignments created by the teacher
+  - Response body: array of assignments created by the teacher with group member details
 
 - GET `/api/assignments` (for student)
-  - Requires session and student role
-  - Response body: array of assignments assigned to the student (group member)
+  - Requires session and student role  
+  - Response body: array of assignments assigned to the student (group member) with teacher info
 
 - POST `/api/assignments`
   - Requires session and teacher role
-  - Request body: `{ question: string, groupMembers: array of student IDs }`
+  - Request body: `{ question: string, selectedStudentIds: array of student IDs }`
   - Response body: `{ id: number }` newly created assignment ID, or error if validation fails
 
 - PUT `/api/assignments/:id/answer`
   - Requires session and student role
   - Request body: `{ answer: string }`
-  - Response body: `204 No Content`, or error if not in group or already answered
+  - Response body: `204 No Content`, or error if not in group or assignment closed
 
-- PUT `/api/assignments/:id/evaluate`
+- PUT `/api/assignments/:id/evaluate` 
   - Requires session and teacher role
   - Request body: `{ score: number (0-30) }`
-  - Response body: `204 No Content`, or error if assignment not found or invalid state
+  - Response body: `204 No Content`, automatically closes assignment
 
 - GET `/api/assignments/:id`
   - Requires authentication
   - Response body: full assignment data if requester is creator or group member
+
+- GET `/api/student/average`
+  - Requires session and student role
+  - Response body: `{ average: number }` weighted average score (rounded to 2 decimals)
+
+- GET `/api/teacher/class-status`
+  - Requires session and teacher role
+  - Response body: array of per-student statistics with weighted averages
+
+- GET `/api/students`
+  - Requires session and teacher role
+  - Response body: array of all students for assignment creation
+
+- POST `/api/students/eligible`
+  - Requires session and teacher role
+  - Request body: `{ selectedIds: array of student IDs }`
+  - Response body: eligible students (respects collaboration limits of max 2 times)
 
 ## Database Tables
 
@@ -67,6 +86,7 @@
   - `submittedAt` (DATETIME or NULL): when the answer was submitted
   - `score` (INTEGER or NULL): assigned score, from 0 to 30
   - `evaluatedAt` (DATETIME or NULL): when the teacher evaluated it
+  - `status` (TEXT): 'open' or 'closed' (automatically managed based on scoring)
 
 - Table `GroupMembers` – links students to assignments (many-to-many). Fields:
   - `assignmentId` (INTEGER, FK to Assignments.id)
@@ -75,11 +95,13 @@
 
 ## Main React Components
 
-- `ListOfSomething` (in `List.js`): component purpose and main functionality
-- `GreatButton` (in `GreatButton.js`): component purpose and main functionality
-- ...
-
-(only _main_ components, minor ones may be skipped)
+- `TeacherDashboard` (in `TeacherDashboard.jsx`): Main teacher interface with assignment management, summary statistics with weighted averages, and sortable class status table
+- `StudentDashboard` (in `StudentDashboard.jsx`): Student's personal dashboard with task organization by status, progress tracking, and weighted average display
+- `CreateAssignment` (in `CreateAssignment.jsx`): Assignment creation form with intelligent student selection and collaboration limit enforcement  
+- `AssignmentView` (in `AssignmentView.jsx`): Detailed assignment interface for viewing, answering (students), and evaluating (teachers)
+- `LoginPage` (in `LoginPage.jsx`): Centered authentication form with modern responsive styling
+- `Navigation` (in `Navigation.jsx`): Responsive navigation bar with role-based menu items
+- `AuthContext` (in `AuthContext.jsx`): React context for authentication state management across the app
 
 ## Screenshot
 
@@ -93,3 +115,12 @@
 - alessandro, "password" (Student)
 - andrea, "password" (Student)
 - ginevra, "password" (Student)
+- beatrice, "password" (Student)
+- emma, "password" (Student)  
+- francesco, "password" (Student)
+- giulia, "password" (Student)
+- ludovica, "password" (Student)
+- mattia, "password" (Student)
+- sofia, "password" (Student)
+- tommaso, "password" (Student)
+- aurora, "password" (Student)
