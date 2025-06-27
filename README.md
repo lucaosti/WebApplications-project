@@ -103,24 +103,36 @@
 - `Navigation` (in `Navigation.jsx`): Responsive navigation bar with role-based menu items
 - `AuthContext` (in `AuthContext.jsx`): React context for authentication state management across the app
 
-## Screenshot
+## Screenshots
 
-![Screenshot](./img/screenshot.jpg)
+![Create new assignment](imgs/screenshot1.png)
+
+![Class state](imgs/screenshot2.png)
 
 ## Users Credentials
 
-- matilde, "password" (Teacher)
-- lorenzo, "password" (Teacher)
-- vittoria, "password" (Teacher)
-- alessandro, "password" (Student)
-- andrea, "password" (Student)
-- ginevra, "password" (Student)
-- beatrice, "password" (Student)
-- emma, "password" (Student)  
-- francesco, "password" (Student)
-- giulia, "password" (Student)
-- ludovica, "password" (Student)
-- mattia, "password" (Student)
-- sofia, "password" (Student)
-- tommaso, "password" (Student)
-- aurora, "password" (Student)
+- Matilde, "password" (Teacher)
+- Lorenzo, "password" (Teacher)
+- Vittoria, "password" (Teacher)
+- Alessandro, "password" (Student)
+- Alessio, "password" (Student)
+- Alice, "password" (Student)
+- Andrea, "password" (Student)
+- Anna, "password" (Student)
+- Aurora, "password" (Student)
+- Beatrice, "password" (Student)
+- Bianca, "password" (Student)
+- Daniel, "password" (Student)
+- Emma, "password" (Student)
+- Francesco, "password" (Student)
+- Ginevra, "password" (Student)
+- Giulia, "password" (Student)
+- Ludovica, "password" (Student)
+- Marco, "password" (Student)
+- Matteo, "password" (Student)
+- Mattia, "password" (Student)
+- Salvatore, "password" (Student)
+- Sofia, "password" (Student)
+- Stefano, "password" (Student)
+- Thomas, "password" (Student)
+- Tommaso, "password" (Student)
