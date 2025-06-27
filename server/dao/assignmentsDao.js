@@ -1,17 +1,23 @@
-const initDB = require('./db');
+import initDB from './db.js';
 
 /**
- * Retrieves a single assignment by its ID.
+ * Retrieve a single assignment by its ID.
+ *
+ * @param {number} id - The assignment ID
+ * @returns {Promise<Object|null>} - The assignment object or null if not found
  */
-async function getAssignmentById(id) {
+export async function getAssignmentById(id) {
   const db = await initDB();
   return db.get('SELECT * FROM Assignments WHERE id = ?', [id]);
 }
 
 /**
- * Retrieves all assignments created by a specific teacher.
+ * Retrieve all assignments created by a specific teacher.
+ *
+ * @param {number} teacherId - The teacher's user ID
+ * @returns {Promise<Array>} - Array of assignment objects
  */
-async function getAssignmentsByTeacher(teacherId) {
+export async function getAssignmentsByTeacher(teacherId) {
   const db = await initDB();
   return db.all(
     'SELECT * FROM Assignments WHERE teacherId = ? ORDER BY createdAt DESC',
@@ -20,9 +26,12 @@ async function getAssignmentsByTeacher(teacherId) {
 }
 
 /**
- * Retrieves all assignments where the given student is in the group.
+ * Retrieve all assignments in which the student is involved.
+ *
+ * @param {number} studentId - The student user ID
+ * @returns {Promise<Array>} - Array of assignment objects
  */
-async function getAssignmentsForStudent(studentId) {
+export async function getAssignmentsForStudent(studentId) {
   const db = await initDB();
   return db.all(
     `SELECT a.*
@@ -35,22 +44,29 @@ async function getAssignmentsForStudent(studentId) {
 }
 
 /**
- * Creates a new assignment and returns its ID.
- * createdAt is automatically handled by SQLite (DEFAULT CURRENT_TIMESTAMP).
+ * Create a new assignment and return its ID.
+ *
+ * @param {Object} assignment - Assignment data
+ * @param {number} assignment.teacherId - The ID of the teacher creating the assignment
+ * @param {string} assignment.question - The text of the question
+ * @returns {Promise<number>} - The ID of the newly created assignment
  */
-async function createAssignment({ teacherId, question }) {
+export async function createAssignment({ teacherId, question }) {
   const db = await initDB();
   const res = await db.run(
-    'INSERT INTO Assignments (teacherId, question) VALUES (?, ?)', 
+    'INSERT INTO Assignments (teacherId, question) VALUES (?, ?)',
     [teacherId, question]
   );
   return res.lastID;
 }
 
 /**
- * Saves or updates the answer of a group before evaluation.
+ * Update the answer for a specific assignment, if still open.
+ *
+ * @param {number} assignmentId - The assignment ID
+ * @param {string} answer - The answer text
  */
-async function updateAnswer(assignmentId, answer) {
+export async function updateAnswer(assignmentId, answer) {
   const db = await initDB();
   const submittedAt = new Date().toISOString();
   await db.run(
@@ -60,22 +76,16 @@ async function updateAnswer(assignmentId, answer) {
 }
 
 /**
- * Assigns a score to a submitted assignment and closes it.
+ * Assign a score to an assignment and mark it as closed.
+ *
+ * @param {number} assignmentId - The assignment ID
+ * @param {number} score - Score between 0 and 30
  */
-async function evaluateAssignment(assignmentId, score) {
+export async function evaluateAssignment(assignmentId, score) {
   const db = await initDB();
   const evaluatedAt = new Date().toISOString();
   await db.run(
-    'UPDATE Assignments SET score = ?, evaluatedAt = ? WHERE id = ?',
+    'UPDATE Assignments SET score = ?, evaluatedAt = ?, status = "closed" WHERE id = ?',
     [score, evaluatedAt, assignmentId]
   );
 }
-
-module.exports = {
-  getAssignmentsByTeacher,
-  getAssignmentsForStudent,
-  getAssignmentById,
-  createAssignment,
-  updateAnswer,
-  evaluateAssignment
-};

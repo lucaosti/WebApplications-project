@@ -1,39 +1,40 @@
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcrypt');
-const usersDao = require('./dao/usersDao');
+import LocalStrategy from 'passport-local';
+import bcrypt from 'bcrypt';
+import * as usersDao from './dao/usersDao.js';
 
 /**
- * Configures Passport.js with local strategy for login and session management.
- * 
- * @param {Object} passport - The Passport instance from Express
+ * Configure Passport.js with the local authentication strategy
+ * and user session serialization/deserialization.
+ *
+ * @param {Object} passport - The Passport instance
  */
 function configurePassport(passport) {
-  // Define the local strategy used during login
+  // Configure the LocalStrategy (username = name field)
   passport.use(new LocalStrategy(async (username, password, done) => {
     try {
-      // Look up user by username
+      // Look up the user by name
       const user = await usersDao.getUserByName(username);
       if (!user)
         return done(null, false, { message: 'Incorrect username.' });
 
-      // Compare provided password with stored hash
+      // Compare password with hashed password
       const match = await bcrypt.compare(password, user.passwordHash);
       if (!match)
         return done(null, false, { message: 'Incorrect password.' });
 
-      // If credentials match, return the user object
+      // Authentication successful
       return done(null, user);
     } catch (err) {
       return done(err);
     }
   }));
 
-  // Serialize user into the session (stores only the user ID)
+  // Serialize user: store user ID in session
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
-  // Deserialize user from session (retrieves full user object by ID)
+  // Deserialize user: retrieve full user object from ID
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await usersDao.getUserById(id);
@@ -44,4 +45,4 @@ function configurePassport(passport) {
   });
 }
 
-module.exports = configurePassport;
+export default configurePassport;
