@@ -5,12 +5,15 @@ import {
   getAssignmentById,
   createAssignment,
   updateAnswer,
-  evaluateAssignment
+  evaluateAssignment,
+  getStudentAverageScore,
+  getClassStatusForTeacher
 } from '../dao/assignmentsDao.js';
 
 import {
   addGroupMembers,
-  getGroupMembers
+  getGroupMembers,
+  countGroupParticipations
 } from '../dao/groupMembersDao.js';
 
 import {
@@ -69,7 +72,9 @@ router.get('/assignments/:id', isLoggedIn, async (req, res) => {
  */
 router.post('/assignments', isLoggedIn, isTeacher, async (req, res) => {
   const { question } = req.body;
-  if (!question) return res.status(400).json({ error: 'Missing question text' });
+  if (typeof question !== 'string' || question.trim().length < 5) {
+    return res.status(400).json({ error: 'Question must be at least 5 characters long' });
+  }
 
   try {
     const id = await createAssignment({ teacherId: req.user.id, question });
@@ -84,8 +89,9 @@ router.post('/assignments', isLoggedIn, isTeacher, async (req, res) => {
  */
 router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) => {
   const { studentIds } = req.body;
-  if (!Array.isArray(studentIds) || studentIds.length === 0)
-    return res.status(400).json({ error: 'Missing or invalid student list' });
+
+  if (!Array.isArray(studentIds) || studentIds.length < 2 || studentIds.length > 6)
+    return res.status(400).json({ error: 'Group must have between 2 and 6 students' });
 
   try {
     const assignment = await getAssignmentById(req.params.id);
@@ -97,9 +103,26 @@ router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) =>
     if (assignment.status !== 'open')
       return res.status(400).json({ error: 'Assignment is closed' });
 
+    // Check for invalid repeated pairs
+    for (let i = 0; i < studentIds.length; i++) {
+      for (let j = i + 1; j < studentIds.length; j++) {
+        const { count } = await countGroupParticipations(
+          req.user.id,
+          studentIds[i],
+          studentIds[j]
+        );
+        if (count >= 2) {
+          return res.status(400).json({
+            error: `Pair (${studentIds[i]}, ${studentIds[j]}) has already worked together 2 times`
+          });
+        }
+      }
+    }
+
     await addGroupMembers(assignment.id, studentIds);
     res.status(204).end();
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to assign group' });
   }
 });
@@ -109,7 +132,9 @@ router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) =>
  */
 router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) => {
   const { answer } = req.body;
-  if (!answer) return res.status(400).json({ error: 'Missing answer' });
+  if (typeof answer !== 'string' || answer.trim().length < 5) {
+    return res.status(400).json({ error: 'Answer must be at least 5 characters long' });
+  }
 
   try {
     const assignment = await getAssignmentById(req.params.id);
@@ -121,11 +146,16 @@ router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) =>
     if (!isInGroup)
       return res.status(403).json({ error: 'You are not in this assignment group' });
 
-    if (assignment.status !== 'open')
-      return res.status(400).json({ error: 'Assignment is closed' });
+    if (assignment.status !== 'open') {
+      return res.status(409).json({
+        error: 'Assignment already closed',
+        assignment: assignment
+      });
+    }
 
     await updateAnswer(assignment.id, answer);
-    res.status(204).end();
+    const updated = await getAssignmentById(assignment.id);
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to submit answer' });
   }
@@ -135,7 +165,7 @@ router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) =>
  * Evaluate and close an assignment (teacher only).
  */
 router.put('/assignments/:id/evaluate', isLoggedIn, isTeacher, async (req, res) => {
-  const { score } = req.body;
+  const { score, expectedAnswer } = req.body;
   const numericScore = Number(score);
 
   if (!Number.isInteger(numericScore) || numericScore < 0 || numericScore > 30)
@@ -151,10 +181,42 @@ router.put('/assignments/:id/evaluate', isLoggedIn, isTeacher, async (req, res) 
     if (assignment.status !== 'open')
       return res.status(400).json({ error: 'Assignment already closed' });
 
+    if (expectedAnswer !== assignment.answer) {
+      return res.status(409).json({
+        error: 'Answer has been updated by the students',
+        assignment: assignment
+      });
+    }
+
     await evaluateAssignment(assignment.id, numericScore);
-    res.status(204).end();
+    const updated = await getAssignmentById(assignment.id);
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to evaluate assignment' });
+  }
+});
+
+/**
+ * Get average score for a student (used in student dashboard).
+ */
+router.get('/student/average', isLoggedIn, isStudent, async (req, res) => {
+  try {
+    const avg = await getStudentAverageScore(req.user.id);
+    res.json({ average: avg });
+  } catch {
+    res.status(500).json({ error: 'Failed to calculate average' });
+  }
+});
+
+/**
+ * Get class status for teacher: students, open/closed counts and averages.
+ */
+router.get('/teacher/class-status', isLoggedIn, isTeacher, async (req, res) => {
+  try {
+    const stats = await getClassStatusForTeacher(req.user.id);
+    res.json(stats);
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch class status' });
   }
 });
 
