@@ -21,76 +21,81 @@ export default function AssignmentView() {
   useEffect(() => {
     async function loadAssignment() {
       try {
-        const res = await apiFetch(`/api/assignments/${id}`);
-        if (!res.ok) {
-          const err = await res.json();
-          setError(err.error || 'Failed to load assignment');
-          return;
-        }
-
-        const data = await res.json();
+        const data = await apiFetch(`/api/assignments/${id}`);
         setAssignment(data);
         setAnswer(data.answer || '');
         setScore(data.score || '');
-      } catch {
-        setError('Network error');
+      } catch (err) {
+        setError(err.message || 'Failed to load assignment');
       }
     }
 
     loadAssignment();
   }, [id]);
 
+  /**
+   * Handle answer submission by students.
+   * Updates the assignment with the provided answer.
+   * Handles conflict cases when assignment is closed during submission.
+   * @param {Event} e - Form submission event
+   */
   async function handleSubmitAnswer(e) {
     e.preventDefault();
     setError(null);
 
     try {
-      const res = await apiFetch(`/api/assignments/${id}/answer`, {
+      const updated = await apiFetch(`/api/assignments/${id}/answer`, {
         method: 'PUT',
-        body: JSON.stringify({ answer }),
+        body: { answer },
       });
-
-      if (res.ok) {
-        const updated = await res.json();
-        setAssignment(updated);
-      } else if (res.status === 409) {
-        const err = await res.json();
-        setAssignment(err.assignment);
-        setAnswer(err.assignment.answer || '');
-        setError('Assignment was closed before your submission.');
+      setAssignment(updated);
+    } catch (err) {
+      if (err.status === 409) {
+        // Assignment was closed before submission
+        try {
+          const conflictData = JSON.parse(err.message);
+          setAssignment(conflictData.assignment);
+          setAnswer(conflictData.assignment.answer || '');
+          setError('Assignment was closed before your submission.');
+        } catch {
+          setError('Assignment was closed before your submission.');
+        }
       } else {
-        const err = await res.json();
-        setError(err.error || 'Failed to submit answer');
+        setError(err.message || 'Failed to submit answer');
       }
-    } catch {
-      setError('Network error');
     }
   }
 
+  /**
+   * Handle assignment evaluation by teachers.
+   * Assigns a score and closes the assignment.
+   * Handles conflict cases when students update answer during evaluation.
+   * @param {Event} e - Form submission event
+   */
   async function handleEvaluate(e) {
     e.preventDefault();
     setError(null);
 
     try {
-      const res = await apiFetch(`/api/assignments/${id}/evaluate`, {
+      const updated = await apiFetch(`/api/assignments/${id}/evaluate`, {
         method: 'PUT',
-        body: JSON.stringify({ score, expectedAnswer: assignment.answer || '' }),
+        body: { score, expectedAnswer: assignment.answer || '' },
       });
-
-      if (res.ok) {
-        const updated = await res.json();
-        setAssignment(updated);
-      } else if (res.status === 409) {
-        const err = await res.json();
-        setAssignment(err.assignment);
-        setAnswer(err.assignment.answer || '');
-        setError('Answer was updated by students. Please review again.');
+      setAssignment(updated);
+    } catch (err) {
+      if (err.status === 409) {
+        // Answer was updated by students
+        try {
+          const conflictData = JSON.parse(err.message);
+          setAssignment(conflictData.assignment);
+          setAnswer(conflictData.assignment.answer || '');
+          setError('Answer was updated by students. Please review again.');
+        } catch {
+          setError('Answer was updated by students. Please review again.');
+        }
       } else {
-        const err = await res.json();
-        setError(err.error || 'Failed to evaluate assignment');
+        setError(err.message || 'Failed to evaluate assignment');
       }
-    } catch {
-      setError('Network error');
     }
   }
 
@@ -99,54 +104,97 @@ export default function AssignmentView() {
 
   return (
     <div className="assignment-view">
-      <button onClick={() => navigate(-1)}>← Back</button>
+      <button onClick={() => navigate(-1)} className="secondary-button mb-lg">
+        ← Back
+      </button>
 
-      <h2>Assignment #{assignment.id}</h2>
-      <p><strong>Question:</strong> {assignment.question}</p>
-      <p><strong>Teacher:</strong> {assignment.teacherName || 'Unknown'}</p>
+      <div className="form-container">
+        <h2>Assignment #{assignment.id}</h2>
+        
+        <div className="mb-md">
+          <p><strong>Question:</strong> {assignment.question}</p>
+          <p><strong>Teacher:</strong> {assignment.teacherName || 'Unknown'}</p>
+          <p><strong>Group Members:</strong> {assignment.groupMembers?.map(m => m.studentName).join(', ')}</p>
+        </div>
 
-      <p><strong>Group Members:</strong> {assignment.groupMembers?.map(m => m.studentName).join(', ')}</p>
+        {user.role === 'student' && (
+          <div className="form-group">
+            <label>Group Answer:</label>
+            {assignment.status === 'closed' ? (
+              <div className="form-container p-md" style={{ 
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--bg-hover)',
+                marginTop: 'var(--space-sm)'
+              }}>
+                {answer || 'No answer submitted.'}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmitAnswer}>
+                <div className="form-group">
+                  <textarea
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    placeholder="Enter your group answer here..."
+                    required
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="primary-button">
+                    Submit Answer
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
 
-      {user.role === 'student' && (
-        <form onSubmit={handleSubmitAnswer}>
-          <label>Group Answer:</label>
-          <textarea
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            disabled={assignment.status === 'closed'}
-            required
-          />
-          <button type="submit" disabled={assignment.status === 'closed'}>
-            Submit Answer
-          </button>
-        </form>
-      )}
+        {user.role === 'teacher' && (
+          <div>
+            <div className="form-group">
+              <p><strong>Submitted Answer:</strong></p>
+              <div className="form-container p-md" style={{ 
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--bg-hover)'
+              }}>
+                {assignment.answer || 'No answer submitted yet.'}
+              </div>
+            </div>
 
-      {user.role === 'teacher' && (
-        <form onSubmit={handleEvaluate}>
-          <label>Submitted Answer:</label>
-          <p>{assignment.answer || 'No answer submitted yet.'}</p>
+            {assignment.status === 'closed' ? (
+              <div className="form-group">
+                <p><strong>Score (0–30):</strong> {assignment.score || 'Not evaluated yet'}</p>
+                <p className="text-muted"><em>This assignment is closed and cannot be re-evaluated.</em></p>
+              </div>
+            ) : (
+              <form onSubmit={handleEvaluate}>
+                <div className="form-group">
+                  <label>Score (0–30):</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="30"
+                    value={score}
+                    onChange={(e) => setScore(e.target.value)}
+                    placeholder="Enter score from 0 to 30"
+                    required
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="primary-button">
+                    Evaluate
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
 
-          <label>Score (0–30):</label>
-          <input
-            type="number"
-            min="0"
-            max="30"
-            value={score}
-            onChange={(e) => setScore(e.target.value)}
-            required
-          />
-          <button type="submit">Evaluate</button>
-        </form>
-      )}
-
-      {assignment.score && (
-        <p><strong>Score:</strong> {assignment.score}</p>
-      )}
-
-      {assignment.status === 'closed' && (
-        <p><em>This assignment is closed.</em></p>
-      )}
+        {assignment.score && assignment.status === 'open' && (
+          <div className="success mt-lg">
+            <strong>Current Score:</strong> {assignment.score}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
