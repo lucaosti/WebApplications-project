@@ -18,35 +18,66 @@ export async function getAssignmentById(id) {
 }
 
 /**
- * Retrieve all assignments created by a specific teacher.
+ * Retrieve all assignments created by a specific teacher, including group members.
  *
  * @param {number} teacherId - The teacher's user ID
- * @returns {Promise<Array>} - Array of assignment objects
+ * @returns {Promise<Array>} - Array of assignment objects with group members
  */
 export async function getAssignmentsByTeacher(teacherId) {
   const db = await initDB();
-  return db.all(
+  const assignments = await db.all(
     'SELECT * FROM Assignments WHERE teacherId = ? ORDER BY createdAt DESC',
     [teacherId]
   );
+  
+  // For each assignment, get the group members
+  for (const assignment of assignments) {
+    const members = await db.all(
+      `SELECT u.id, u.name 
+       FROM GroupMembers gm 
+       JOIN Users u ON gm.studentId = u.id 
+       WHERE gm.assignmentId = ?
+       ORDER BY u.name`,
+      [assignment.id]
+    );
+    assignment.groupMembers = members;
+  }
+  
+  return assignments;
 }
 
 /**
- * Retrieve all assignments in which the student is involved.
+ * Retrieve all assignments in which the student is involved, including group members.
  *
  * @param {number} studentId - The student user ID
- * @returns {Promise<Array>} - Array of assignment objects
+ * @returns {Promise<Array>} - Array of assignment objects with group members
  */
 export async function getAssignmentsForStudent(studentId) {
   const db = await initDB();
-  return db.all(
-    `SELECT a.*
+  const assignments = await db.all(
+    `SELECT a.*, u.name AS teacherName
      FROM Assignments a
+     JOIN Users u ON a.teacherId = u.id
      JOIN GroupMembers g ON a.id = g.assignmentId
      WHERE g.studentId = ?
      ORDER BY a.createdAt DESC`,
     [studentId]
   );
+  
+  // For each assignment, get all group members
+  for (const assignment of assignments) {
+    const members = await db.all(
+      `SELECT u.id, u.name 
+       FROM GroupMembers gm 
+       JOIN Users u ON gm.studentId = u.id 
+       WHERE gm.assignmentId = ?
+       ORDER BY u.name`,
+      [assignment.id]
+    );
+    assignment.groupMembers = members;
+  }
+  
+  return assignments;
 }
 
 /**
@@ -107,7 +138,7 @@ export async function getStudentAverageScore(studentId) {
   const result = await db.get(
     `
     SELECT
-      ROUND(SUM(a.score * 1.0 / groupSize) / SUM(1.0 / groupSize), 2) AS average
+      ROUND(SUM(score * 1.0 / groupSize) / SUM(1.0 / groupSize), 2) AS average
     FROM (
       SELECT
         a.score,
@@ -119,7 +150,7 @@ export async function getStudentAverageScore(studentId) {
         AND a.status = 'closed'
         AND a.score IS NOT NULL
       GROUP BY a.id
-    ) AS subquery
+    ) AS weighted_scores
     `,
     [studentId]
   );
@@ -128,6 +159,7 @@ export async function getStudentAverageScore(studentId) {
 
 /**
  * Get per-student statistics (open/closed assignments and average score) for a teacher's class.
+ * Includes ALL students in the system, showing "- 0 0" for those with no assignments from this teacher.
  *
  * @param {number} teacherId - The teacher user ID
  * @returns {Promise<Array>} - Array of student status objects
@@ -158,20 +190,26 @@ export async function getClassStatusForTeacher(teacherId) {
       JOIN Users u ON g.studentId = u.id
       JOIN GroupSizes gs ON gs.assignmentId = a.id
       WHERE a.teacherId = ?
+    ),
+    AllStudents AS (
+      SELECT id AS studentId, name AS studentName
+      FROM Users 
+      WHERE role = 'student'
     )
     SELECT
-      studentId,
-      studentName,
-      SUM(status = 'open') AS numOpen,
-      SUM(status = 'closed') AS numClosed,
+      s.studentId,
+      s.studentName,
+      COALESCE(SUM(sa.status = 'open'), 0) AS numOpen,
+      COALESCE(SUM(sa.status = 'closed'), 0) AS numClosed,
       ROUND(
-        SUM(CASE WHEN status = 'closed' AND score IS NOT NULL THEN score * 1.0 / groupSize ELSE 0 END) /
-        NULLIF(SUM(CASE WHEN status = 'closed' AND score IS NOT NULL THEN 1.0 / groupSize ELSE 0 END), 0),
+        SUM(CASE WHEN sa.status = 'closed' AND sa.score IS NOT NULL THEN sa.score * 1.0 / sa.groupSize ELSE 0 END) /
+        NULLIF(SUM(CASE WHEN sa.status = 'closed' AND sa.score IS NOT NULL THEN 1.0 / sa.groupSize ELSE 0 END), 0),
         2
       ) AS avgScore
-    FROM StudentAssignments
-    GROUP BY studentId, studentName
-    ORDER BY studentName ASC
+    FROM AllStudents s
+    LEFT JOIN StudentAssignments sa ON s.studentId = sa.studentId
+    GROUP BY s.studentId, s.studentName
+    ORDER BY s.studentName ASC
     `,
     [teacherId, teacherId]
   );

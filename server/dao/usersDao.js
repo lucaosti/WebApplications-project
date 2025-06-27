@@ -2,21 +2,16 @@ import initDB from './db.js';
 
 /**
  * Retrieve a user by their name (used for login).
- * Uses a callback-based API, wrapped in a Promise.
+ *
+ * @param {string} name - The user name
+ * @returns {Promise<Object|null>} - The user object or null if not found
  */
 export async function getUserByName(name) {
   const db = await initDB();
-
-  return new Promise((resolve, reject) => {
-    db.get(
-      'SELECT id, name, role, passwordHash FROM Users WHERE name = ?',
-      [name],
-      (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      }
-    );
-  });
+  return db.get(
+    'SELECT id, name, role, passwordHash FROM Users WHERE name = ?',
+    [name]
+  );
 }
 
 
@@ -28,17 +23,10 @@ export async function getUserByName(name) {
  */
 export async function getUserById(id) {
   const db = await initDB();
-
-  return new Promise((resolve, reject) => {
-    db.get(
-      'SELECT id, name, role, passwordHash FROM Users WHERE id = ?',
-      [id],
-      (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      }
-    );
-  });
+  return db.get(
+    'SELECT id, name, role, passwordHash FROM Users WHERE id = ?',
+    [id]
+  );
 }
 
 
