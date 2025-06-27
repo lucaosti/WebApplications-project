@@ -53,15 +53,26 @@ router.get('/assignments/:id', isLoggedIn, async (req, res) => {
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
     // Basic role-based access
+    const group = await getGroupMembers(assignment.id);
+    const isStudentInGroup = group.some(m => m.studentId === req.user.id);
+
     if (
       (req.user.role === 'teacher' && assignment.teacherId !== req.user.id) ||
-      (req.user.role === 'student' &&
-        !(await getGroupMembers(assignment.id)).some(m => m.studentId === req.user.id))
+      (req.user.role === 'student' && !isStudentInGroup)
     ) {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
-    res.json(assignment);
+    // Add groupMembers info: array of { studentId, studentName }
+    const groupWithNames = group.map(m => ({
+      studentId: m.studentId,
+      studentName: m.studentName
+    }));
+
+    res.json({
+      ...assignment,
+      groupMembers: groupWithNames
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch assignment' });
   }
