@@ -60,13 +60,19 @@ app.use('/api', assignmentsRouter);
  * Return the currently authenticated user info.
  */
 app.get('/api/sessions/current', (req, res) => {
+  console.log('GET /api/sessions/current - isAuthenticated:', req.isAuthenticated());
+  console.log('GET /api/sessions/current - session:', req.session);
+  console.log('GET /api/sessions/current - user:', req.user);
+  
   if (req.isAuthenticated()) {
+    console.log('User is authenticated, returning user info');
     res.json({
       id: req.user.id,
       name: req.user.name,
       role: req.user.role
     });
   } else {
+    console.log('User is NOT authenticated, returning 401');
     res.status(401).json({ error: 'Not authenticated' });
   }
 });

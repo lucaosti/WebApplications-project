@@ -17,6 +17,10 @@ import {
 } from '../dao/groupMembersDao.js';
 
 import {
+  getAllStudents
+} from '../dao/usersDao.js';
+
+import {
   isLoggedIn,
   isTeacher,
   isStudent
@@ -40,6 +44,7 @@ router.get('/assignments', isLoggedIn, async (req, res) => {
       res.status(403).json({ error: 'Invalid role' });
     }
   } catch (err) {
+    console.error('Error fetching assignments:', err);
     res.status(500).json({ error: 'Failed to fetch assignments' });
   }
 });
@@ -50,7 +55,10 @@ router.get('/assignments', isLoggedIn, async (req, res) => {
 router.get('/assignments/:id', isLoggedIn, async (req, res) => {
   try {
     const assignment = await getAssignmentById(req.params.id);
-    if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
+    
+    if (!assignment) {
+      return res.status(404).json({ error: 'Assignment not found' });
+    }
 
     // Basic role-based access
     const group = await getGroupMembers(assignment.id);
@@ -69,11 +77,14 @@ router.get('/assignments/:id', isLoggedIn, async (req, res) => {
       studentName: m.studentName
     }));
 
-    res.json({
+    const result = {
       ...assignment,
       groupMembers: groupWithNames
-    });
+    };
+    
+    res.json(result);
   } catch (err) {
+    console.error('Error fetching single assignment:', err);
     res.status(500).json({ error: 'Failed to fetch assignment' });
   }
 });
@@ -83,14 +94,15 @@ router.get('/assignments/:id', isLoggedIn, async (req, res) => {
  */
 router.post('/assignments', isLoggedIn, isTeacher, async (req, res) => {
   const { question } = req.body;
-  if (typeof question !== 'string' || question.trim().length < 5) {
-    return res.status(400).json({ error: 'Question must be at least 5 characters long' });
+  if (typeof question !== 'string' || question.trim().length === 0) {
+    return res.status(400).json({ error: 'Question cannot be empty' });
   }
 
   try {
     const id = await createAssignment({ teacherId: req.user.id, question });
     res.status(201).json({ id });
   } catch (err) {
+    console.error('Error creating assignment:', err);
     res.status(500).json({ error: 'Failed to create assignment' });
   }
 });
@@ -143,8 +155,8 @@ router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) =>
  */
 router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) => {
   const { answer } = req.body;
-  if (typeof answer !== 'string' || answer.trim().length < 5) {
-    return res.status(400).json({ error: 'Answer must be at least 5 characters long' });
+  if (typeof answer !== 'string' || answer.trim().length === 0) {
+    return res.status(400).json({ error: 'Answer cannot be empty' });
   }
 
   try {
@@ -214,7 +226,8 @@ router.get('/student/average', isLoggedIn, isStudent, async (req, res) => {
   try {
     const avg = await getStudentAverageScore(req.user.id);
     res.json({ average: avg });
-  } catch {
+  } catch (err) {
+    console.error('Error calculating student average:', err);
     res.status(500).json({ error: 'Failed to calculate average' });
   }
 });
@@ -226,7 +239,8 @@ router.get('/teacher/class-status', isLoggedIn, isTeacher, async (req, res) => {
   try {
     const stats = await getClassStatusForTeacher(req.user.id);
     res.json(stats);
-  } catch {
+  } catch (err) {
+    console.error('Error fetching class status:', err);
     res.status(500).json({ error: 'Failed to fetch class status' });
   }
 });
@@ -263,8 +277,39 @@ router.post('/students/eligible', isLoggedIn, isTeacher, async (req, res) => {
 
     res.json(eligible);
   } catch (err) {
-    console.error(err);
+    console.error('Error determining eligible students:', err);
     res.status(500).json({ error: 'Failed to determine eligible students' });
+  }
+});
+
+/**
+ * Get all students (teacher only) - used for creating assignments.
+ */
+router.get('/students', isLoggedIn, isTeacher, async (req, res) => {
+  try {
+    const students = await getAllStudents();
+    res.json(students);
+  } catch (err) {
+    console.error('Error fetching students:', err);
+    res.status(500).json({ error: 'Failed to fetch students' });
+  }
+});
+
+/**
+ * Test endpoint to check authentication status
+ */
+router.get('/test-auth', (req, res) => {
+  if (req.user) {
+    res.json({
+      authenticated: true,
+      user: req.user,
+      sessionId: req.sessionID
+    });
+  } else {
+    res.json({
+      authenticated: false,
+      sessionId: req.sessionID
+    });
   }
 });
 
