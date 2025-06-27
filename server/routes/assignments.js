@@ -220,4 +220,41 @@ router.get('/teacher/class-status', isLoggedIn, isTeacher, async (req, res) => {
   }
 });
 
+/**
+ * Get eligible students to be added to a group,
+ * excluding those who already collaborated with any of the selected students twice (with the same teacher).
+ * Used to dynamically update selection client-side.
+ */
+router.post('/students/eligible', isLoggedIn, isTeacher, async (req, res) => {
+  const { selectedIds } = req.body;
+
+  if (!Array.isArray(selectedIds)) {
+    return res.status(400).json({ error: 'selectedIds must be an array' });
+  }
+
+  try {
+    const allStudents = await getAllStudents();
+    const eligible = [];
+
+    for (const student of allStudents) {
+      if (selectedIds.includes(student.id)) continue;
+
+      let valid = true;
+      for (const sid of selectedIds) {
+        const { count } = await countGroupParticipations(req.user.id, student.id, sid);
+        if (count >= 2) {
+          valid = false;
+          break;
+        }
+      }
+      if (valid) eligible.push(student);
+    }
+
+    res.json(eligible);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to determine eligible students' });
+  }
+});
+
 export default router;
