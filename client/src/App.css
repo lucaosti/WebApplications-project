@@ -553,11 +553,14 @@ tr:hover {
 }
 
 .dashboard,
-.create-assignment,
-.assignment-view {
-  padding: var(--space-lg) 0;
+.create-assignment {
+  padding: var(--space-lg) var(--space-xl);
   width: 100%;
-  max-width: 900px;
+}
+
+.assignment-view {
+  padding: var(--space-lg) var(--space-xl);
+  width: 800px;
   margin: 0 auto;
 }
 
