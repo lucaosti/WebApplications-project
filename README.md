@@ -5,8 +5,8 @@
 ## React Client Application Routes
 
 - Route `/`: Login page with centered authentication form
-- Route `/teacher/dashboard`: Teacher's main dashboard showing assignments and class statistics  
-- Route `/student/dashboard`: Student's personal dashboard with assigned tasks and progress
+- Route `/teacher`: Teacher's main dashboard showing assignments and class statistics  
+- Route `/student`: Student's personal dashboard with assigned tasks and progress
 - Route `/teacher/create`: Form for creating new assignments and selecting group members
 - Route `/assignment/:id`: Detailed view of a specific assignment (view/edit for students, evaluation for teachers)
 
@@ -19,7 +19,7 @@
 
 - POST `/api/logout`
   - No parameters
-  - Response body: `204 No Content`
+  - Response body: `{ message: "Logged out successfully" }` with status 200
 
 - GET `/api/sessions/current`
   - No parameters
@@ -35,18 +35,23 @@
 
 - POST `/api/assignments`
   - Requires session and teacher role
-  - Request body: `{ question: string, selectedStudentIds: array of student IDs }`
+  - Request body: `{ question: string }`
   - Response body: `{ id: number }` newly created assignment ID, or error if validation fails
+
+- POST `/api/assignments/:id/group`
+  - Requires session and teacher role
+  - Request body: `{ studentIds: array of student IDs }`
+  - Response body: `204 No Content`, or error if invalid group or collaboration limits exceeded
 
 - PUT `/api/assignments/:id/answer`
   - Requires session and student role
   - Request body: `{ answer: string }`
-  - Response body: `204 No Content`, or error if not in group or assignment closed
+  - Response body: updated assignment object with group members, or conflict error if assignment closed
 
 - PUT `/api/assignments/:id/evaluate` 
   - Requires session and teacher role
-  - Request body: `{ score: number (0-30) }`
-  - Response body: `204 No Content`, automatically closes assignment
+  - Request body: `{ score: number (0-30), expectedAnswer: string }`
+  - Response body: updated assignment object, or conflict error if answer was modified by students
 
 - GET `/api/assignments/:id`
   - Requires authentication
@@ -105,9 +110,9 @@
 
 ## Screenshots
 
-![Create new assignment](imgs/screenshot1.png)
+![Create new assignment](imgs/Screenshot1.png)
 
-![Class state](imgs/screenshot2.png)
+![Class state](imgs/Screenshot2.png)
 
 ## Users Credentials
 

@@ -10,15 +10,22 @@ import configurePassport from './passport-config.js';
 import authRouter from './routes/auth.js';
 import assignmentsRouter from './routes/assignments.js';
 
-// Resolve __dirname for ES modules
+// Resolve __dirname for ES modules compatibility
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SQLiteStore = SQLiteStoreFactory(session);
 const app = express();
 
+/**
+ * Request logging middleware.
+ * Logs only API requests with timestamp to reduce console noise.
+ */
 app.use((req, res, next) => {
-  console.log(`Request: ${req.method} ${req.url}`);
+  if (req.url.startsWith('/api/')) {
+    const timestamp = new Date().toISOString().slice(11, 19); // HH:mm:ss format
+    console.log(`[${timestamp}] HTTP ${req.method} ${req.url}`);
+  }
   next();
 });
 
@@ -57,38 +64,41 @@ app.use('/api', authRouter);
 app.use('/api', assignmentsRouter);
 
 /**
- * Return the currently authenticated user info.
+ * API endpoint to check current user session status.
+ * Returns user information if authenticated, otherwise returns 401.
  */
 app.get('/api/sessions/current', (req, res) => {
-  console.log('GET /api/sessions/current - isAuthenticated:', req.isAuthenticated());
-  console.log('GET /api/sessions/current - session:', req.session);
-  console.log('GET /api/sessions/current - user:', req.user);
-  
   if (req.isAuthenticated()) {
-    console.log('User is authenticated, returning user info');
+    console.log(`[AUTH] Session check: user ${req.user.name} (${req.user.role}) is authenticated`);
     res.json({
       id: req.user.id,
       name: req.user.name,
       role: req.user.role
     });
   } else {
-    console.log('User is NOT authenticated, returning 401');
+    console.log('[AUTH] Session check: user not authenticated');
     res.status(401).json({ error: 'Not authenticated' });
   }
 });
 
 /**
- * Return 404 error for unmatched /api/* routes.
+ * Handle unmatched API routes.
+ * Return 404 error for any API endpoint that doesn't exist.
  */
 app.use('/api/*', (_, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
 /**
- * Generic error handler for internal server errors.
+ * Global error handler for unhandled exceptions.
+ * Logs error details and returns generic error response to client.
  */
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
+  console.error('[ERROR] Unhandled server error:', err.message);
+  // Show full stack trace only in development environment
+  if (process.env.NODE_ENV === 'development') {
+    console.error('[ERROR] Stack trace:', err.stack);
+  }
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
