@@ -3,6 +3,7 @@ import {
   getAssignmentsByTeacher,
   getAssignmentsForStudent,
   getAssignmentById,
+  getAssignmentByIdWithMembers,
   createAssignment,
   updateAnswer,
   evaluateAssignment,
@@ -54,15 +55,14 @@ router.get('/assignments', isLoggedIn, async (req, res) => {
  */
 router.get('/assignments/:id', isLoggedIn, async (req, res) => {
   try {
-    const assignment = await getAssignmentById(req.params.id);
+    const assignment = await getAssignmentByIdWithMembers(req.params.id);
     
     if (!assignment) {
       return res.status(404).json({ error: 'Assignment not found' });
     }
 
     // Basic role-based access
-    const group = await getGroupMembers(assignment.id);
-    const isStudentInGroup = group.some(m => m.studentId === req.user.id);
+    const isStudentInGroup = assignment.groupMembers.some(m => m.studentId === req.user.id);
 
     if (
       (req.user.role === 'teacher' && assignment.teacherId !== req.user.id) ||
@@ -71,18 +71,7 @@ router.get('/assignments/:id', isLoggedIn, async (req, res) => {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
-    // Add groupMembers info: array of { studentId, studentName }
-    const groupWithNames = group.map(m => ({
-      studentId: m.studentId,
-      studentName: m.studentName
-    }));
-
-    const result = {
-      ...assignment,
-      groupMembers: groupWithNames
-    };
-    
-    res.json(result);
+    res.json(assignment);
   } catch (err) {
     console.error('Error fetching single assignment:', err);
     res.status(500).json({ error: 'Failed to fetch assignment' });
@@ -170,14 +159,15 @@ router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) =>
       return res.status(403).json({ error: 'You are not in this assignment group' });
 
     if (assignment.status !== 'open') {
+      const fullAssignment = await getAssignmentByIdWithMembers(assignment.id);
       return res.status(409).json({
         error: 'Assignment already closed',
-        assignment: assignment
+        assignment: fullAssignment
       });
     }
 
     await updateAnswer(assignment.id, answer);
-    const updated = await getAssignmentById(assignment.id);
+    const updated = await getAssignmentByIdWithMembers(assignment.id);
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to submit answer' });
@@ -205,14 +195,15 @@ router.put('/assignments/:id/evaluate', isLoggedIn, isTeacher, async (req, res) 
       return res.status(400).json({ error: 'Assignment already closed' });
 
     if (expectedAnswer !== assignment.answer) {
+      const updatedAssignment = await getAssignmentByIdWithMembers(assignment.id);
       return res.status(409).json({
         error: 'Answer has been updated by the students',
-        assignment: assignment
+        assignment: updatedAssignment
       });
     }
 
     await evaluateAssignment(assignment.id, numericScore);
-    const updated = await getAssignmentById(assignment.id);
+    const updated = await getAssignmentByIdWithMembers(assignment.id);
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to evaluate assignment' });

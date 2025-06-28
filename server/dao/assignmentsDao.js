@@ -214,3 +214,39 @@ export async function getClassStatusForTeacher(teacherId) {
     [teacherId, teacherId]
   );
 }
+
+/**
+ * Retrieve a single assignment by its ID, including the teacher's name and group members.
+ *
+ * @param {number} id - The assignment ID
+ * @returns {Promise<Object|null>} - The assignment object with group members or null if not found
+ */
+export async function getAssignmentByIdWithMembers(id) {
+  const db = await initDB();
+  const assignment = await db.get(
+    `SELECT a.*, u.name AS teacherName
+     FROM Assignments a
+     JOIN Users u ON a.teacherId = u.id
+     WHERE a.id = ?`,
+    [id]
+  );
+  
+  if (!assignment) return null;
+  
+  // Get group members
+  const members = await db.all(
+    `SELECT u.id, u.name 
+     FROM GroupMembers gm 
+     JOIN Users u ON gm.studentId = u.id 
+     WHERE gm.assignmentId = ?
+     ORDER BY u.name`,
+    [assignment.id]
+  );
+  
+  assignment.groupMembers = members.map(m => ({
+    studentId: m.id,
+    studentName: m.name
+  }));
+  
+  return assignment;
+}
