@@ -2,7 +2,6 @@ import express from 'express';
 import {
   getAssignmentsByTeacher,
   getAssignmentsForStudent,
-  getAssignmentById,
   getAssignmentByIdWithMembers,
   createAssignment,
   updateAnswer,
@@ -13,7 +12,6 @@ import {
 
 import {
   addGroupMembers,
-  getGroupMembers,
   countGroupParticipations
 } from '../dao/groupMembersDao.js';
 
@@ -106,7 +104,7 @@ router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) =>
     return res.status(400).json({ error: 'Group must have between 2 and 6 students' });
 
   try {
-    const assignment = await getAssignmentById(req.params.id);
+    const assignment = await getAssignmentByIdWithMembers(req.params.id);
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
     if (assignment.teacherId !== req.user.id)
@@ -149,11 +147,10 @@ router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) =>
   }
 
   try {
-    const assignment = await getAssignmentById(req.params.id);
+    const assignment = await getAssignmentByIdWithMembers(req.params.id);
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
-    const members = await getGroupMembers(assignment.id);
-    const isInGroup = members.some(m => m.studentId === req.user.id);
+    const isInGroup = assignment.groupMembers.some(m => m.studentId === req.user.id);
 
     if (!isInGroup)
       return res.status(403).json({ error: 'You are not in this assignment group' });
@@ -185,7 +182,7 @@ router.put('/assignments/:id/evaluate', isLoggedIn, isTeacher, async (req, res) 
     return res.status(400).json({ error: 'Score must be an integer between 0 and 30' });
 
   try {
-    const assignment = await getAssignmentById(req.params.id);
+    const assignment = await getAssignmentByIdWithMembers(req.params.id);
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
     if (assignment.teacherId !== req.user.id)

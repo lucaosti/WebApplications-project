@@ -1,23 +1,6 @@
 import initDB from './db.js';
 
 /**
- * Retrieve a single assignment by its ID, including the teacher's name.
- *
- * @param {number} id - The assignment ID
- * @returns {Promise<Object|null>} - The assignment object or null if not found
- */
-export async function getAssignmentById(id) {
-  const db = await initDB();
-  return db.get(
-    `SELECT a.*, u.name AS teacherName
-     FROM Assignments a
-     JOIN Users u ON a.teacherId = u.id
-     WHERE a.id = ?`,
-    [id]
-  );
-}
-
-/**
  * Retrieve all assignments created by a specific teacher, including group members.
  *
  * @param {number} teacherId - The teacher's user ID

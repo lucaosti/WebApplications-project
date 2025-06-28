@@ -15,24 +15,6 @@ export async function addGroupMembers(assignmentId, studentIds) {
 }
 
 /**
- * Retrieve the list of students assigned to a specific assignment,
- * including their names.
- *
- * @param {number} assignmentId - The assignment ID
- * @returns {Promise<Array>} - Array of group member entries with studentId and name
- */
-export async function getGroupMembers(assignmentId) {
-  const db = await initDB();
-  return db.all(
-    `SELECT gm.assignmentId, gm.studentId, u.name AS studentName
-     FROM GroupMembers gm
-     JOIN Users u ON gm.studentId = u.id
-     WHERE gm.assignmentId = ?`,
-    [assignmentId]
-  );
-}
-
-/**
  * Count how many times two students have been in the same group
  * for assignments created by the same teacher.
  *
