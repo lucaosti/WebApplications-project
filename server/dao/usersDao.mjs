@@ -1,4 +1,4 @@
-import initDB from './db.js';
+import initDB from './db.mjs';
 
 /**
  * Retrieve a user by their name (used for login).

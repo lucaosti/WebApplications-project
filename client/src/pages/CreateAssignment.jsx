@@ -32,7 +32,10 @@ export default function CreateAssignment() {
       });
   }, []);
 
-  // Update ineligible students based on current selection
+  /**
+   * Update ineligible students based on current selection.
+   * Fetches eligible students from the server and calculates which ones are ineligible.
+   */
   useEffect(() => {
     console.log('Updating ineligible students. allStudents:', allStudents.length, 'selectedIds:', selectedIds);
     

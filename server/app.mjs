@@ -6,9 +6,9 @@ import SQLiteStoreFactory from 'connect-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import configurePassport from './passport-config.js';
-import authRouter from './routes/auth.js';
-import assignmentsRouter from './routes/assignments.js';
+import configurePassport from './passport-config.mjs';
+import authRouter from './routes/auth.mjs';
+import assignmentsRouter from './routes/assignments.mjs';
 
 // Resolve __dirname for ES modules compatibility
 const __filename = fileURLToPath(import.meta.url);

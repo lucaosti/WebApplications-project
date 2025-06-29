@@ -1,4 +1,4 @@
-import initDB from './db.js';
+import initDB from './db.mjs';
 
 /**
  * Retrieve all assignments created by a specific teacher, including group members.

@@ -3,6 +3,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 
+/**
+ * Initialize and configure the SQLite database connection.
+ * Promisifies database methods for async/await usage.
+ * 
+ * @returns {Promise<Object>} - Promisified database instance
+ */
 export default async function initDB() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -13,7 +19,7 @@ export default async function initDB() {
       if (err) {
         reject(err);
       } else {
-        // Promisify the database methods
+        // Promisify the database methods for async/await usage
         db.get = promisify(db.get.bind(db));
         db.all = promisify(db.all.bind(db));
         

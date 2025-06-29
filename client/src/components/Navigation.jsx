@@ -1,13 +1,19 @@
 import { useAuth } from '../auth/AuthContext.jsx';
 
 /**
- * Navigation component with logout functionality
+ * Navigation component with logout functionality.
+ * Displays user information and provides logout button when user is authenticated.
  */
 export default function Navigation() {
   const { user, logout } = useAuth();
 
-  if (!user) return null; // Don't show navigation if not logged in
+  // Don't show navigation if not logged in
+  if (!user) return null; 
 
+  /**
+   * Handle logout button click.
+   * Calls the logout function from auth context.
+   */
   const handleLogout = async () => {
     await logout();
   };

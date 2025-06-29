@@ -54,7 +54,7 @@ router.post('/logout', (req, res) => {
       return res.status(500).json({ error: 'Logout failed' });
     }
     console.log(`[AUTH] Logout successful: user ${username}`);
-    res.status(200).json({ message: 'Logged out successfully' });
+    res.status(204).end();  // No content response - frontend handles success message
   });
 });
 

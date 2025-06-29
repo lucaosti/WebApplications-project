@@ -8,22 +8,22 @@ import {
   evaluateAssignment,
   getStudentAverageScore,
   getClassStatusForTeacher
-} from '../dao/assignmentsDao.js';
+} from '../dao/assignmentsDao.mjs';
 
 import {
   addGroupMembers,
   countGroupParticipations
-} from '../dao/groupMembersDao.js';
+} from '../dao/groupMembersDao.mjs';
 
 import {
   getAllStudents
-} from '../dao/usersDao.js';
+} from '../dao/usersDao.mjs';
 
 import {
   isLoggedIn,
   isTeacher,
   isStudent
-} from '../middlewares/auth.js';
+} from '../middlewares/auth.mjs';
 
 const router = express.Router();
 

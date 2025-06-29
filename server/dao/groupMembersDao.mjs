@@ -1,4 +1,4 @@
-import initDB from './db.js';
+import initDB from './db.mjs';
 
 /**
  * Add multiple students to an assignment group.

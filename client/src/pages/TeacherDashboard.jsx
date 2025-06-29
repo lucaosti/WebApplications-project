@@ -24,6 +24,10 @@ export default function TeacherDashboard() {
    * Fetch both the teacher's assignments and the class status on initial mount.
    */
   useEffect(() => {
+    /**
+     * Load teacher dashboard data including assignments and class status.
+     * Fetches assignments created by the teacher and per-student statistics.
+     */
     const loadData = async () => {
       try {
         // Fetch assignments created by the current teacher
@@ -143,7 +147,7 @@ export default function TeacherDashboard() {
                   <div className="assignment-main">
                     <h4>{a.question}</h4>
                     <p><strong>Status:</strong> {a.status} 
-                      {a.answer && <span> • Answer submitted</span>}
+                      {a.answer && a.answer.trim() !== '' && <span> • Answer submitted</span>}
                     </p>
                   </div>
                   <div className="group-members">
@@ -152,7 +156,7 @@ export default function TeacherDashboard() {
                   </div>
                 </div>
                 <button onClick={() => navigate(`/assignment/${a.id}`)} className="secondary-button assignment-button">
-                  View / Edit
+                  {a.answer && a.answer.trim() !== '' ? 'Evaluate' : 'View'}
                 </button>
               </li>
             ))}

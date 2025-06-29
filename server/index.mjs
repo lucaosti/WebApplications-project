@@ -1,4 +1,4 @@
-import expressApp from './app.js';
+import expressApp from './app.mjs';
 
 const PORT = 3001;
 

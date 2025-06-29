@@ -18,6 +18,10 @@ export default function StudentDashboard() {
    * Fetch student's assignments and average score when component mounts.
    */
   useEffect(() => {
+    /**
+     * Load student dashboard data including assignments and average score.
+     * Handles both assignment list and average score calculation.
+     */
     const loadDashboard = async () => {
       try {
         const [assignments, averageData] = await Promise.all([

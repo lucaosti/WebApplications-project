@@ -1,6 +1,6 @@
 import LocalStrategy from 'passport-local';
 import bcrypt from 'bcrypt';
-import * as usersDao from './dao/usersDao.js';
+import * as usersDao from './dao/usersDao.mjs';
 
 /**
  * Configure Passport.js with the local authentication strategy
