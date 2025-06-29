@@ -1,7 +1,3 @@
-/* ========================================
-   UNIFORM DESIGN SYSTEM - MODERN LIGHT THEME
-   ======================================== */
-
 /* Reset and base */
 * {
   box-sizing: border-box;
@@ -10,36 +6,25 @@
 }
 
 :root {
-  /* Main colors - LIGHT THEME */
+  /* Colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-tertiary: #ffffff;
   --bg-hover: #e9ecef;
-  
-  /* Text - ALL DARK */
   --text-primary: #212529;
   --text-secondary: #495057;
   --text-muted: #6c757d;
-  
-  /* Accents - CYAN FOR CONFIRM */
   --accent-primary: #17a2b8;
   --accent-hover: #138496;
   --accent-light: #d1ecf1;
-  
-  /* CANCEL/SECONDARY COLOR - GRAY */
   --cancel-primary: #6c757d;
   --cancel-hover: #5a6268;
-  --cancel-light: #e2e6ea;
-  
-  /* States */
   --success: #28a745;
   --success-light: #d4edda;
   --error: #dc3545;
   --error-light: #f8d7da;
   --warning: #ffc107;
   --warning-light: #fff3cd;
-  
-  /* Selection/Active */
   --selected: #17a2b8;
   --selected-bg: #d1ecf1;
   --ineligible: #dc3545;
@@ -53,31 +38,24 @@
   --space-xl: 2rem;
   --space-xxl: 3rem;
   
-  /* Border radius */
+  /* Other */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  
-  /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
-  
-  /* Transitions */
   --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
-  --transition-slow: 0.35s ease;
 }
 
 body, html {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   font-size: 16px;
 }
 
-/* Main container - uniform width */
 #root {
   max-width: 900px;
   margin: 0 auto;
@@ -88,32 +66,21 @@ body, html {
   border-right: 1px solid #dee2e6;
 }
 
-/* Login specific layout - full screen background */
+/* Login layout */
 .login-page-layout {
   max-width: none !important;
   margin: 0 !important;
   background-color: var(--bg-primary) !important;
   box-shadow: none !important;
   border: none !important;
-  padding: 0 !important;
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
-  right: 0 !important;
+  right: 0 !important;  
   bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-}
-
-.login-page-layout .login-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
 }
 
 .login-page-layout .form-container {
@@ -122,30 +89,21 @@ body, html {
   padding: var(--space-xxl);
   box-shadow: var(--shadow-lg);
   border: 1px solid #dee2e6;
-  margin: 0;
   width: 100%;
   max-width: 400px;
 }
 
-.login-page-layout .login-form {
-  margin: 0 !important; /* Reset any margin from the original .login-form rule */
-}
-
 .app-content {
   padding: var(--space-xl);
-  margin-top: 70px; /* Space for fixed navigation */
+  margin-top: 70px;
 }
 
-/* ========================================
-   NAVIGATION - FULL BROWSER WIDTH
-   ======================================== */
-
+/* Navigation */
 .navigation {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;
   background-color: var(--bg-tertiary);
   border-bottom: 2px solid var(--accent-primary);
   z-index: 1000;
@@ -186,10 +144,7 @@ body, html {
   transform: translateY(-1px);
 }
 
-/* ========================================
-   TYPOGRAPHY
-   ======================================== */
-
+/* Typography */
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 var(--space-md) 0;
   font-weight: 600;
@@ -201,18 +156,13 @@ h1 { font-size: 2.5rem; }
 h2 { font-size: 2rem; }
 h3 { font-size: 1.5rem; }
 h4 { font-size: 1.25rem; }
-h5 { font-size: 1.125rem; }
-h6 { font-size: 1rem; }
 
 p {
   margin: 0 0 var(--space-md) 0;
   color: var(--text-secondary);
 }
 
-/* ========================================
-   UNIFORM BUTTONS - SAME DIMENSIONS
-   ======================================== */
-
+/* Buttons */
 button, .btn {
   display: inline-flex;
   align-items: center;
@@ -223,66 +173,36 @@ button, .btn {
   font-size: 1rem;
   font-weight: 500;
   font-family: inherit;
-  text-decoration: none;
   cursor: pointer;
   transition: var(--transition-fast);
   white-space: nowrap;
-  line-height: 1.5;
-  min-height: 44px; /* Uniform height */
-  min-width: 120px; /* Uniform minimum width */
+  min-height: 44px;
+  min-width: 120px;
 }
 
-/* CONFIRM BUTTON - CYAN */
-.primary-button, 
-button[type="submit"], 
-.create-button,
-.btn-primary {
+.primary-button, button[type="submit"] {
   background-color: var(--accent-primary);
   color: white;
 }
 
-.primary-button:hover, 
-button[type="submit"]:hover, 
-.create-button:hover,
-.btn-primary:hover {
+.primary-button:hover, button[type="submit"]:hover {
   background-color: var(--accent-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
 }
 
-/* CANCEL/SECONDARY BUTTON - GRAY */
-.secondary-button, 
-.cancel-button,
-.btn-secondary {
+.secondary-button {
   background-color: var(--cancel-primary);
   color: white;
 }
 
-.secondary-button:hover, 
-.cancel-button:hover,
-.btn-secondary:hover {
+.secondary-button:hover {
   background-color: var(--cancel-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
 }
 
-/* DANGER BUTTON - RED for logout */
-.danger-button,
-.btn-danger {
-  background-color: var(--error);
-  color: white;
-}
-
-.danger-button:hover,
-.btn-danger:hover {
-  background-color: #c82333;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
-}
-
-/* DISABLED BUTTON */
-button:disabled,
-.btn:disabled {
+button:disabled {
   background-color: #e9ecef;
   color: var(--text-muted);
   cursor: not-allowed;
@@ -290,10 +210,7 @@ button:disabled,
   box-shadow: none;
 }
 
-/* ========================================
-   UNIFORM FORMS AND INPUTS
-   ======================================== */
-
+/* Forms */
 .form-container {
   background-color: var(--bg-tertiary);
   border-radius: var(--radius-lg);
@@ -311,15 +228,9 @@ button:disabled,
   font-weight: 600;
   margin-bottom: var(--space-sm);
   color: var(--text-primary);
-  font-size: 1rem;
 }
 
-input[type="text"], 
-input[type="password"], 
-input[type="email"], 
-input[type="number"],
-textarea,
-select {
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea, select {
   width: 100%;
   padding: var(--space-sm) var(--space-md);
   border: 1px solid #ced4da;
@@ -329,12 +240,10 @@ select {
   font-size: 1rem;
   font-family: inherit;
   transition: var(--transition-fast);
-  min-height: 44px; /* Accessibility */
+  min-height: 44px;
 }
 
-input:focus, 
-textarea:focus,
-select:focus {
+input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.1);
@@ -343,11 +252,9 @@ select:focus {
 textarea {
   min-height: 120px;
   resize: vertical;
-  line-height: 1.5;
 }
 
-input::placeholder,
-textarea::placeholder {
+input::placeholder, textarea::placeholder {
   color: var(--text-muted);
 }
 
@@ -360,16 +267,12 @@ textarea::placeholder {
   border-top: 1px solid #dee2e6;
 }
 
-/* ========================================
-   UNIFORM LISTS AND CARDS
-   ======================================== */
-
+/* Lists and Cards */
 .list-container {
   margin: var(--space-lg) 0;
 }
 
-.assignment-list, 
-.student-list {
+.assignment-list, .student-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -378,34 +281,25 @@ textarea::placeholder {
   gap: var(--space-sm);
 }
 
-.list-item, 
-.assignment-card, 
-.student-item {
+.assignment-card, .student-item {
   background-color: var(--bg-tertiary);
   border: 1px solid #dee2e6;
   border-radius: var(--radius-md);
   padding: var(--space-md);
   transition: var(--transition-fast);
-  cursor: pointer;
+  position: relative;
+  padding-bottom: 60px;
 }
 
-.list-item:hover, 
 .assignment-card:hover {
   border-color: var(--accent-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(23, 162, 184, 0.1);
 }
 
-/* Special states for students */
 .student-item {
   cursor: default;
-  position: relative;
-}
-
-.student-item:hover {
-  border-color: #dee2e6;
-  transform: none;
-  box-shadow: none;
+  padding-bottom: var(--space-md);
 }
 
 .student-item.selected {
@@ -440,10 +334,6 @@ textarea::placeholder {
   opacity: 0.5;
 }
 
-.ineligible-text {
-  color: var(--text-primary);
-}
-
 .reason {
   margin-left: auto;
   font-size: 0.85rem;
@@ -458,10 +348,42 @@ textarea::placeholder {
   margin-left: var(--space-sm);
 }
 
-/* ========================================
-   TABELLE
-   ======================================== */
+.assignment-content {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
 
+.assignment-main {
+  flex: 1;
+}
+
+.group-members {
+  background-color: var(--bg-secondary);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent-primary);
+  min-width: 200px;
+  max-width: 250px;
+}
+
+.group-members p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.group-members strong {
+  color: var(--accent-primary);
+}
+
+.assignment-button {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-md);
+}
+
+/* Tables */
 .table-container {
   overflow-x: auto;
   border-radius: var(--radius-md);
@@ -509,10 +431,7 @@ tr:hover {
   background-color: var(--bg-hover);
 }
 
-/* ========================================
-   STATUS MESSAGES
-   ======================================== */
-
+/* Status Messages */
 .error {
   background-color: var(--error-light);
   color: var(--error);
@@ -543,19 +462,9 @@ tr:hover {
   font-weight: 500;
 }
 
-/* ========================================
-   SPECIFIC LAYOUTS
-   ======================================== */
-
-.login-form {
-  max-width: 400px;
-  margin: 4rem auto;
-}
-
-.dashboard,
-.create-assignment {
+/* Layouts */
+.dashboard, .create-assignment {
   padding: var(--space-lg) var(--space-xl);
-  width: 100%;
 }
 
 .assignment-view {
@@ -564,9 +473,7 @@ tr:hover {
   margin: 0 auto;
 }
 
-.dashboard h2,
-.create-assignment h2,
-.assignment-view h2 {
+.dashboard h2, .create-assignment h2, .assignment-view h2 {
   margin-bottom: var(--space-xl);
   padding-bottom: var(--space-md);
   border-bottom: 2px solid var(--accent-primary);
@@ -579,7 +486,6 @@ tr:hover {
   margin-top: var(--space-xl);
 }
 
-/* Statistics summary grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -608,47 +514,23 @@ tr:hover {
   font-weight: 500;
 }
 
-/* ========================================
-   UTILITY CLASSES
-   ======================================== */
-
+/* Utility Classes */
 .text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
 .d-flex { display: flex; }
-.flex-column { flex-direction: column; }
-.flex-wrap { flex-wrap: wrap; }
-.justify-center { justify-content: center; }
 .justify-between { justify-content: space-between; }
-.justify-end { justify-content: flex-end; }
 .align-center { align-items: center; }
-
 .gap-sm { gap: var(--space-sm); }
 .gap-md { gap: var(--space-md); }
-.gap-lg { gap: var(--space-lg); }
-
-.mt-xs { margin-top: var(--space-xs); }
 .mt-sm { margin-top: var(--space-sm); }
 .mt-md { margin-top: var(--space-md); }
 .mt-lg { margin-top: var(--space-lg); }
-.mt-xl { margin-top: var(--space-xl); }
-
-.mb-xs { margin-bottom: var(--space-xs); }
 .mb-sm { margin-bottom: var(--space-sm); }
 .mb-md { margin-bottom: var(--space-md); }
 .mb-lg { margin-bottom: var(--space-lg); }
-.mb-xl { margin-bottom: var(--space-xl); }
-
 .p-sm { padding: var(--space-sm); }
 .p-md { padding: var(--space-md); }
-.p-lg { padding: var(--space-lg); }
-.p-xl { padding: var(--space-xl); }
 
-/* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
-
+/* Responsive Design */
 @media (max-width: 768px) {
   :root {
     --space-xl: 1.5rem;
@@ -658,11 +540,6 @@ tr:hover {
     margin: 0;
     border-left: none;
     border-right: none;
-  }
-  
-  .navigation {
-    /* Navigation maintains responsive dimensions */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
   .nav-content {
@@ -689,7 +566,6 @@ tr:hover {
     width: 100%;
   }
   
-  /* Maintain minimum dimensions even on mobile */
   button {
     min-width: unset;
     width: 100%;
@@ -706,10 +582,7 @@ tr:hover {
   th, td {
     padding: var(--space-sm);
   }
-}
-
-/* Responsive adjustments for assignment cards */
-@media (max-width: 768px) {
+  
   .assignment-content {
     flex-direction: column;
     gap: var(--space-sm);
@@ -720,14 +593,18 @@ tr:hover {
     max-width: unset;
   }
   
-  .assignment-button {
-    position: static;
-    width: 100%;
-    margin-top: var(--space-sm);
-  }
-  
   .assignment-card {
     padding-bottom: var(--space-md);
+    position: relative;
+  }
+  
+  .assignment-button {
+    position: static;
+    width: auto;
+    max-width: 150px;
+    margin-top: var(--space-sm);
+    margin-left: auto;
+    display: block;
   }
 }
 
@@ -742,58 +619,10 @@ tr:hover {
   
   h1 { font-size: 1.75rem; }
   h2 { font-size: 1.5rem; }
-}
-
-/* Assignment card layout improvements */
-.assignment-card {
-  position: relative;
-  padding-bottom: 60px; /* Space for bottom-right button */
-}
-
-.assignment-card .d-flex {
-  gap: var(--space-md);
-}
-
-.assignment-card h4 {
-  margin-bottom: var(--space-xs);
-  line-height: 1.3;
-}
-
-.assignment-card p {
-  margin-bottom: var(--space-xs);
-}
-
-.assignment-content {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
-}
-
-.assignment-main {
-  flex: 1;
-}
-
-.group-members {
-  background-color: var(--bg-secondary);
-  padding: var(--space-sm);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--accent-primary);
-  min-width: 200px;
-  max-width: 250px;
-}
-
-.group-members p {
-  margin: 0;
-  font-size: 0.85rem;
-}
-
-.group-members strong {
-  color: var(--accent-primary);
-}
-
-.assignment-button {
-  position: absolute;
-  bottom: var(--space-md);
-  right: var(--space-md);
+  
+  .assignment-button {
+    max-width: 120px;
+    font-size: 0.9rem;
+    padding: var(--space-sm) var(--space-md);
+  }
 }
