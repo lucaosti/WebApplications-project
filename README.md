@@ -111,9 +111,9 @@
 
 ## Screenshots
 
-![Create new assignment](imgs/screenshot1.png)
+![Create new assignment](imgs/Screenshot1.png)
 
-![Class state](imgs/screenshot2.png)
+![Class state](imgs/Screenshot2.png)
 
 ## Users Credentials
 
