@@ -67,6 +67,12 @@ export default function TeacherDashboard() {
     let aVal = a[sortField];
     let bVal = b[sortField];
     
+    // Handle total field (calculated as numOpen + numClosed)
+    if (sortField === 'total') {
+      aVal = a.numOpen + a.numClosed;
+      bVal = b.numOpen + b.numClosed;
+    }
+    
     // Handle null values for avgScore
     if (sortField === 'avgScore') {
       aVal = aVal === null ? -1 : aVal;
@@ -231,6 +237,7 @@ export default function TeacherDashboard() {
                 <th onClick={() => handleSort('avgScore')}>Avg. Score {getSortIndicator('avgScore')}</th>
                 <th onClick={() => handleSort('numOpen')}>Open {getSortIndicator('numOpen')}</th>
                 <th onClick={() => handleSort('numClosed')}>Closed {getSortIndicator('numClosed')}</th>
+                <th onClick={() => handleSort('total')}>Total {getSortIndicator('total')}</th>
               </tr>
             </thead>
             <tbody>
@@ -240,6 +247,7 @@ export default function TeacherDashboard() {
                   <td>{s.avgScore !== null ? s.avgScore.toFixed(2) : '-'}</td>
                   <td>{s.numOpen}</td>
                   <td>{s.numClosed}</td>
+                  <td>{s.numOpen + s.numClosed}</td>
                 </tr>
               ))}
             </tbody>

@@ -101,7 +101,7 @@
 
 ## Main React Components
 
-- `TeacherDashboard` (in `TeacherDashboard.jsx`): Main teacher interface with assignment management, summary statistics with weighted averages, and sortable class status table
+- `TeacherDashboard` (in `TeacherDashboard.jsx`): Main teacher interface with assignment management, summary statistics with weighted averages, and sortable class status table showing student progress including total assignments
 - `StudentDashboard` (in `StudentDashboard.jsx`): Student's personal dashboard with task organization by status, progress tracking, and weighted average display
 - `CreateAssignment` (in `CreateAssignment.jsx`): Assignment creation form with intelligent student selection and collaboration limit enforcement  
 - `AssignmentView` (in `AssignmentView.jsx`): Detailed assignment interface for viewing, answering (students), and evaluating (teachers)
