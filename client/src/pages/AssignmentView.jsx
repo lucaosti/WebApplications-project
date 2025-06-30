@@ -134,7 +134,7 @@ export default function AssignmentView() {
       )}
 
       <div className="form-container">
-        <h2>Assignment #{assignment.id}</h2>
+        <h2>Assignment</h2>
         
         <div className="mb-md">
           <p><strong>Question:</strong> {assignment.question}</p>
