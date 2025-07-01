@@ -47,12 +47,12 @@
 - PUT `/api/assignments/:id/answer`
   - Requires session and student role
   - Request body: `{ answer: string }`
-  - Response body: `204 No Content`, or error if not in group or assignment closed
+  - Response body: updated assignment object, or error if not in group or assignment closed
 
 - PUT `/api/assignments/:id/evaluate` 
   - Requires session and teacher role
-  - Request body: `{ score: number (0-30) }`
-  - Response body: `204 No Content`, automatically closes assignment
+  - Request body: `{ score: number (0-30), expectedAnswer: string }`
+  - Response body: updated assignment object, automatically closes assignment
 
 - GET `/api/assignments/:id`
   - Requires authentication
