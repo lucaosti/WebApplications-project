@@ -146,12 +146,19 @@ export default function AssignmentView() {
           <div className="form-group">
             <label>Group Answer:</label>
             {assignment.status === 'closed' ? (
-              <div className="form-container p-md" style={{ 
-                backgroundColor: 'var(--bg-secondary)',
-                border: '1px solid var(--bg-hover)',
-                marginTop: 'var(--space-sm)'
-              }}>
-                {answer || 'No answer submitted.'}
+              <div>
+                <div className="form-container p-md" style={{ 
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--bg-hover)',
+                  marginTop: 'var(--space-sm)'
+                }}>
+                  {answer || 'No answer submitted.'}
+                </div>
+                {assignment.score !== null && assignment.score !== undefined && (
+                  <div className="mt-md">
+                    <p><strong>Score:</strong> {assignment.score}/30</p>
+                  </div>
+                )}
               </div>
             ) : (
               <form onSubmit={handleSubmitAnswer}>
