@@ -1,4 +1,10 @@
-/* Reset and base */
+/* ==========================================
+   ASSIGNMENTS APPLICATION CSS
+   ========================================== */
+
+/* ===================
+   RESET AND VARIABLES
+   =================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -48,6 +54,9 @@
   --transition-fast: 0.15s ease;
 }
 
+/* ===================
+   BASE AND LAYOUT
+   =================== */
 body, html {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -66,7 +75,14 @@ body, html {
   border-right: 1px solid #dee2e6;
 }
 
-/* Login layout */
+.app-content {
+  padding: var(--space-xl);
+  margin-top: 70px;
+}
+
+/* ===================
+   LOGIN LAYOUT
+   =================== */
 .login-page-layout {
   max-width: none !important;
   margin: 0 !important;
@@ -93,12 +109,9 @@ body, html {
   max-width: 400px;
 }
 
-.app-content {
-  padding: var(--space-xl);
-  margin-top: 70px;
-}
-
-/* Navigation */
+/* ===================
+   NAVIGATION
+   =================== */
 .navigation {
   position: fixed;
   top: 0;
@@ -144,7 +157,9 @@ body, html {
   transform: translateY(-1px);
 }
 
-/* Typography */
+/* ===================
+   TYPOGRAPHY
+   =================== */
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 var(--space-md) 0;
   font-weight: 600;
@@ -162,7 +177,9 @@ p {
   color: var(--text-secondary);
 }
 
-/* Buttons */
+/* ===================
+   BUTTONS
+   =================== */
 button, .btn {
   display: inline-flex;
   align-items: center;
@@ -210,7 +227,9 @@ button:disabled {
   box-shadow: none;
 }
 
-/* Forms */
+/* ===================
+   FORMS
+   =================== */
 .form-container {
   background-color: var(--bg-tertiary);
   border-radius: var(--radius-lg);
@@ -267,7 +286,49 @@ input::placeholder, textarea::placeholder {
   border-top: 1px solid #dee2e6;
 }
 
-/* Lists and Cards */
+/* ===================
+   LOADING AND ERROR COMPONENTS
+   =================== */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-md);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  margin: var(--space-md) 0;
+}
+
+.assignment-section {
+  margin-bottom: var(--space-xl);
+}
+
+.assignment-section h3 {
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+}
+
+/* ===================
+   LISTS AND CARDS
+   =================== */
 .list-container {
   margin: var(--space-lg) 0;
 }
@@ -383,7 +444,9 @@ input::placeholder, textarea::placeholder {
   right: var(--space-md);
 }
 
-/* Tables */
+/* ===================
+   TABLES
+   =================== */
 .table-container {
   overflow-x: auto;
   border-radius: var(--radius-md);
@@ -415,8 +478,14 @@ th {
   transition: background-color 0.2s ease;
 }
 
-th:hover {
+th:hover, .sortable-header:hover {
   background-color: var(--bg-hover);
+}
+
+.sortable-header {
+  user-select: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
 }
 
 td {
@@ -431,7 +500,9 @@ tr:hover {
   background-color: var(--bg-hover);
 }
 
-/* Status Messages */
+/* ===================
+   STATUS MESSAGES
+   =================== */
 .error {
   background-color: var(--error-light);
   color: var(--error);
@@ -462,7 +533,9 @@ tr:hover {
   font-weight: 500;
 }
 
-/* Layouts */
+/* ===================
+   PAGE LAYOUTS
+   =================== */
 .dashboard, .create-assignment {
   padding: var(--space-lg) var(--space-xl);
 }
@@ -514,7 +587,9 @@ tr:hover {
   font-weight: 500;
 }
 
-/* Utility Classes */
+/* ===================
+   UTILITY CLASSES
+   =================== */
 .text-center { text-align: center; }
 .d-flex { display: flex; }
 .justify-between { justify-content: space-between; }
@@ -530,7 +605,9 @@ tr:hover {
 .p-sm { padding: var(--space-sm); }
 .p-md { padding: var(--space-md); }
 
-/* Responsive Design */
+/* ===================
+   RESPONSIVE DESIGN
+   =================== */
 @media (max-width: 768px) {
   :root {
     --space-xl: 1.5rem;

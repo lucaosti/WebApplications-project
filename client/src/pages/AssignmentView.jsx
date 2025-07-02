@@ -16,6 +16,7 @@ export default function AssignmentView() {
   const [answer, setAnswer] = useState('');
   const [score, setScore] = useState('');
   const [error, setError] = useState(null);
+  const [isForbidden, setIsForbidden] = useState(false);
 
   // Load assignment details on mount
   useEffect(() => {
@@ -29,8 +30,14 @@ export default function AssignmentView() {
         setAssignment(data);
         setAnswer(data.answer || '');
         setScore(data.score || '');
+        setIsForbidden(false);
       } catch (err) {
-        setError(err.message || 'Failed to load assignment');
+        if (err.status === 403) {
+          setIsForbidden(true);
+          setError('Forbidden: You do not have access to this assignment.');
+        } else {
+          setError(err.message || 'Failed to load assignment');
+        }
       }
     }
 
@@ -103,11 +110,35 @@ export default function AssignmentView() {
     }
   }
 
-  if (!assignment) {
+  if (!assignment && !isForbidden) {
     return (
       <div>
         {error && <p className="error">{error}</p>}
         <p>Loading assignment...</p>
+      </div>
+    );
+  }
+
+  // Handle forbidden access case
+  if (isForbidden) {
+    return (
+      <div className="assignment-view">
+        <button 
+          onClick={() => navigate(user?.role === 'teacher' ? '/teacher' : '/student')} 
+          className="secondary-button mb-lg"
+        >
+          ← Back
+        </button>
+
+        <div className="error mb-md" style={{ 
+          padding: 'var(--space-md)', 
+          backgroundColor: '#fef2f2', 
+          border: '1px solid #fecaca', 
+          borderRadius: '6px',
+          color: '#dc2626'
+        }}>
+          {error}
+        </div>
       </div>
     );
   }
