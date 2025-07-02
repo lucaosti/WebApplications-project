@@ -4,7 +4,7 @@
 
 ## React Client Application Routes
 
-- Route `/`: Redirects authenticated users to appropriate dashboard based on role
+- Route `/`: Redirects authenticated users to appropriate dashboard based on role (teacher → `/teacher`, student → `/student`)
 - Route `/login`: Login page with centered authentication form
 - Route `/teacher`: Teacher's main dashboard showing assignments and class statistics  
 - Route `/student`: Student's personal dashboard with assigned tasks and progress
@@ -16,7 +16,7 @@
 - POST `/api/login`
   - Request body: `{ name: string, password: string }`
   - Response body (success): `{ id, name, role }`
-  - Response body (failure): `{ error: "Invalid credentials" }`
+  - Response body (failure): `{ error: "Login failed" }` or specific error message
 
 - POST `/api/logout`
   - No parameters
@@ -24,7 +24,7 @@
 
 - GET `/api/sessions/current`
   - No parameters
-  - Response body: `{ id, name, role }` if logged in, or `401 Unauthorized`
+  - Response body: `{ id, name, role }` if logged in, or `401 Unauthorized` with `{ error: "Not authenticated" }`
 
 - GET `/api/assignments` (for teacher)
   - Requires session and teacher role
@@ -37,7 +37,8 @@
 - POST `/api/assignments`
   - Requires session and teacher role
   - Request body: `{ question: string }`
-  - Response body: `{ id: number }` newly created assignment ID, or error if validation fails
+  - Response body: `{ id: number }` newly created assignment ID
+  - Returns 201 status code on success, or error if validation fails
 
 - POST `/api/assignments/:id/group`
   - Requires session and teacher role
@@ -109,7 +110,7 @@
 - `Navigation` (in `Navigation.jsx`): Responsive navigation bar with role-based menu items
 - `AuthContext` (in `AuthContext.jsx`): React context for authentication state management across the app
 
-## Screenshots
+## Screenshot
 
 ![Create new assignment](imgs/Screenshot1.png)
 
