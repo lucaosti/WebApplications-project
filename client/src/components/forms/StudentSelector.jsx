@@ -39,7 +39,6 @@ export default function StudentSelector({
                 />
                 <span className={isIneligible ? 'text-muted' : ''}>
                   {student.name}
-                  {isIneligible && !isSelected && ' (unavailable for this combination)'}
                 </span>
               </label>
             </div>
