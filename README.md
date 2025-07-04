@@ -118,28 +118,30 @@
 
 ## Users Credentials
 
-- Matilde, "password" (Teacher)
-- Lorenzo, "password" (Teacher)
-- Vittoria, "password" (Teacher)
-- Alessandro, "password" (Student)
-- Alessio, "password" (Student)
-- Alice, "password" (Student)
-- Andrea, "password" (Student)
-- Anna, "password" (Student)
-- Aurora, "password" (Student)
-- Beatrice, "password" (Student)
-- Bianca, "password" (Student)
-- Daniel, "password" (Student)
-- Emma, "password" (Student)
-- Francesco, "password" (Student)
-- Ginevra, "password" (Student)
-- Giulia, "password" (Student)
-- Ludovica, "password" (Student)
-- Marco, "password" (Student)
-- Matteo, "password" (Student)
-- Mattia, "password" (Student)
-- Salvatore, "password" (Student)
-- Sofia, "password" (Student)
-- Stefano, "password" (Student)
-- Thomas, "password" (Student)
-- Tommaso, "password" (Student)
+| Username | Password | Role |
+|----------|----------|------|
+| Matilde | password | Teacher |
+| Lorenzo | password | Teacher |
+| Vittoria | password | Teacher |
+| Alessandro | password | Student |
+| Alessio | password | Student |
+| Alice | password | Student |
+| Andrea | password | Student |
+| Anna | password | Student |
+| Aurora | password | Student |
+| Beatrice | password | Student |
+| Bianca | password | Student |
+| Daniel | password | Student |
+| Emma | password | Student |
+| Francesco | password | Student |
+| Ginevra | password | Student |
+| Giulia | password | Student |
+| Ludovica | password | Student |
+| Marco | password | Student |
+| Matteo | password | Student |
+| Mattia | password | Student |
+| Salvatore | password | Student |
+| Sofia | password | Student |
+| Stefano | password | Student |
+| Thomas | password | Student |
+| Tommaso | password | Student |
