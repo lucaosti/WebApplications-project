@@ -2,12 +2,22 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.jsx';
 
 /**
- * Assignment card component for displaying individual assignments
+ * Assignment card component for displaying individual assignments.
+ * Shows assignment details, status, and provides action button.
+ * Adapts display based on assignment status and user permissions.
+ * 
+ * @param {Object} assignment - The assignment object to display
+ * @param {boolean} showScore - Whether to show the score in the status
  */
 export default function AssignmentCard({ assignment, showScore = false }) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  /**
+   * Get appropriate button text based on assignment status and answer state.
+   * 
+   * @returns {string} The text to display on the action button
+   */
   const getButtonText = () => {
     if (assignment.status === 'closed') {
       return 'View Results';
@@ -15,6 +25,11 @@ export default function AssignmentCard({ assignment, showScore = false }) {
     return assignment.answer ? 'View/Edit' : 'Submit Answer';
   };
 
+  /**
+   * Generate status text including answer and score information.
+   * 
+   * @returns {string} Formatted status text for display
+   */
   const getStatusText = () => {
     let statusText = assignment.status;
     

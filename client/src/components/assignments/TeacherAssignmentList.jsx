@@ -1,7 +1,13 @@
 import TeacherAssignmentCard from './TeacherAssignmentCard.jsx';
 
 /**
- * Teacher-specific assignment list component
+ * Teacher-specific assignment list component.
+ * Displays assignments using TeacherAssignmentCard components
+ * with teacher-appropriate interface and actions.
+ * 
+ * @param {Array} assignments - Array of assignment objects to display
+ * @param {string} title - Section title to display
+ * @param {string} emptyMessage - Message to show when no assignments exist
  */
 export default function TeacherAssignmentList({ 
   assignments, 

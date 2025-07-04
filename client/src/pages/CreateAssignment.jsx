@@ -77,7 +77,8 @@ export default function CreateAssignment() {
   }, [selectedIds, allStudents]);
 
   /**
-   * Handle student selection changes
+   * Handle changes to student selection.
+   * Enforces maximum group size limit of 6 students.
    */
   const handleSelectionChange = (newSelectedIds) => {
     if (newSelectedIds.length <= 6) {
@@ -86,14 +87,15 @@ export default function CreateAssignment() {
   };
 
   /**
-   * Cancel assignment creation
+   * Cancel assignment creation and return to teacher dashboard.
    */
   const handleCancel = () => {
     navigate('/teacher');
   };
 
   /**
-   * Handle form submission
+   * Handle form submission for creating a new assignment.
+   * Validates input, creates assignment, assigns group, and redirects on success.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();

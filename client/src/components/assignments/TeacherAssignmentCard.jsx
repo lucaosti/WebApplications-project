@@ -1,11 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 
 /**
- * Teacher-specific assignment card component
+ * Teacher-specific assignment card component.
+ * Displays assignment information from the teacher's perspective
+ * with appropriate action buttons for evaluation and viewing.
+ * 
+ * @param {Object} assignment - The assignment object to display
  */
 export default function TeacherAssignmentCard({ assignment }) {
   const navigate = useNavigate();
 
+  /**
+   * Get appropriate button text based on assignment status and answer state.
+   * 
+   * @returns {string} The text to display on the action button
+   */
   const getButtonText = () => {
     if (assignment.status === 'closed') {
       return 'View Details';
@@ -13,6 +22,11 @@ export default function TeacherAssignmentCard({ assignment }) {
     return assignment.answer && assignment.answer.trim() !== '' ? 'Evaluate' : 'View';
   };
 
+  /**
+   * Generate status text including answer and score information.
+   * 
+   * @returns {string} Formatted status text for display
+   */
   const getStatusText = () => {
     let statusText = assignment.status;
     

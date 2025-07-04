@@ -1,5 +1,12 @@
 /**
- * Student selector component for creating assignments
+ * Student selector component for creating assignments.
+ * Displays a list of students with checkboxes for selection.
+ * Handles disabling of ineligible students based on collaboration limits.
+ * 
+ * @param {Array} students - Array of all student objects
+ * @param {Array} selectedIds - Array of currently selected student IDs
+ * @param {Array} ineligibleIds - Array of student IDs that cannot be selected
+ * @param {Function} onSelectionChange - Callback when selection changes
  */
 export default function StudentSelector({ 
   students, 
@@ -7,12 +14,18 @@ export default function StudentSelector({
   ineligibleIds, 
   onSelectionChange 
 }) {
+  /**
+   * Handle checkbox state changes for student selection.
+   * Adds or removes student from selection based on current state.
+   * 
+   * @param {number} studentId - The ID of the student whose checkbox was clicked
+   */
   const handleCheckboxChange = (studentId) => {
     if (selectedIds.includes(studentId)) {
-      // Remove from selection
+      // Remove student from selection
       onSelectionChange(selectedIds.filter(id => id !== studentId));
     } else {
-      // Add to selection
+      // Add student to selection
       onSelectionChange([...selectedIds, studentId]);
     }
   };
@@ -34,7 +47,7 @@ export default function StudentSelector({
                 <input
                   type="checkbox"
                   checked={isSelected}
-                  disabled={isIneligible && !isSelected}
+                  disabled={isIneligible && !isSelected} // Allow deselection of ineligible students
                   onChange={() => handleCheckboxChange(student.id)}
                 />
                 <span className={isIneligible ? 'text-muted' : ''}>

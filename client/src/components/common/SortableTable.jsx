@@ -1,5 +1,13 @@
 /**
- * Sortable table component for displaying student class status
+ * Sortable table component for displaying student class status.
+ * Provides clickable headers for sorting and displays data in a responsive table.
+ * Integrates with useTableSort hook for sorting functionality.
+ * 
+ * @param {Array} data - Array of objects to display in the table
+ * @param {Array} columns - Array of column definition objects
+ * @param {string} sortField - Currently active sort field
+ * @param {string} sortDirection - Current sort direction ('asc' or 'desc')
+ * @param {Function} onSort - Callback function when header is clicked
  */
 export default function SortableTable({ 
   data, 
@@ -10,6 +18,10 @@ export default function SortableTable({
 }) {
   /**
    * Get the sort indicator arrow for table headers.
+   * Shows up/down arrows based on current sort state.
+   * 
+   * @param {string} field - The field to check for sort indicator
+   * @returns {string} Empty string or arrow character
    */
   const getSortArrow = (field) => {
     if (sortField !== field) return '';

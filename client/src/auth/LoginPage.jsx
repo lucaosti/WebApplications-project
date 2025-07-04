@@ -4,6 +4,7 @@ import { useAuth } from './AuthContext';
 
 /**
  * LoginPage component allowing users to log in by name and password.
+ * Provides authentication interface with form validation and role-based redirection.
  */
 export default function LoginPage() {
   const { login, loginError } = useAuth();
@@ -29,6 +30,9 @@ export default function LoginPage() {
 
   /**
    * Handles form submission to perform login and redirect based on role.
+   * Authenticates user and navigates to appropriate dashboard.
+   * 
+   * @param {Event} e - Form submission event
    */
   async function handleSubmit(e) {
     e.preventDefault();

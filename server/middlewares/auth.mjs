@@ -1,6 +1,10 @@
 /**
  * Middleware to ensure user is authenticated.
  * Returns 401 if user is not logged in.
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next function
  */
 export function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
@@ -13,6 +17,10 @@ export function isLoggedIn(req, res, next) {
 /**
  * Middleware to ensure user has teacher role.
  * Returns 403 if user is not a teacher.
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next function
  */
 export function isTeacher(req, res, next) {
   const role = req.user?.role?.trim().toLowerCase();
@@ -28,6 +36,10 @@ export function isTeacher(req, res, next) {
 /**
  * Middleware to ensure user has student role.
  * Returns 403 if user is not a student.
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next function
  */
 export function isStudent(req, res, next) {
   const role = req.user?.role?.trim().toLowerCase();

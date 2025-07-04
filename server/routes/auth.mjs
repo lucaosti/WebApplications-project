@@ -43,6 +43,7 @@ router.post('/login', (req, res, next) => {
 /**
  * POST /api/logout
  * Log out the current authenticated user and destroy session.
+ * Terminates the user session and clears authentication state.
  */
 router.post('/logout', (req, res) => {
   const username = req.user?.name || 'Unknown';

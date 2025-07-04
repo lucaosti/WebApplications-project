@@ -8,18 +8,19 @@ import AssignmentView from './pages/AssignmentView.jsx';
 import CreateAssignment from './pages/CreateAssignment.jsx';
 
 /**
- * Component to redirect logged-in users away from login page
+ * Component to redirect logged-in users away from login page.
+ * Prevents authenticated users from accessing the login page.
  */
 function RedirectIfAuthenticated({ children }) {
   const { isAuthenticated, user } = useAuth();
 
+  // Wait for session loading to complete
   if (user === undefined) {
-    // Still loading session
     return null;
   }
 
   if (isAuthenticated) {
-    // Redirect to appropriate dashboard based on role
+    // Redirect to appropriate dashboard based on user role
     if (user.role === 'teacher') {
       return <Navigate to="/teacher" replace />;
     } else if (user.role === 'student') {
@@ -31,14 +32,14 @@ function RedirectIfAuthenticated({ children }) {
 }
 
 /**
- * Component to restrict access to authenticated users.
- * Redirects to /login if user is not logged in.
+ * Component to restrict access to authenticated users only.
+ * Redirects unauthenticated users to the login page.
  */
 function RequireAuth({ children }) {
   const { isAuthenticated, user } = useAuth();
 
+  // Wait for session loading to complete
   if (user === undefined) {
-    // Still loading session
     return null;
   }
 
@@ -51,6 +52,7 @@ function RequireAuth({ children }) {
 
 /**
  * Main routing component for the application.
+ * Defines all routes and handles role-based access control.
  */
 export default function AppRouter() {
   const { user } = useAuth();

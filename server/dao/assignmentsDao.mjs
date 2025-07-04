@@ -8,12 +8,14 @@ import initDB from './db.mjs';
  */
 export async function getAssignmentsByTeacher(teacherId) {
   const db = await initDB();
+  
+  // Get all assignments created by this teacher
   const assignments = await db.all(
     'SELECT * FROM Assignments WHERE teacherId = ? ORDER BY createdAt DESC',
     [teacherId]
   );
   
-  // For each assignment, get the group members
+  // For each assignment, fetch the group members for display
   for (const assignment of assignments) {
     const members = await db.all(
       `SELECT u.id, u.name 
@@ -37,6 +39,8 @@ export async function getAssignmentsByTeacher(teacherId) {
  */
 export async function getAssignmentsForStudent(studentId) {
   const db = await initDB();
+  
+  // Get all assignments where the student is a group member
   const assignments = await db.all(
     `SELECT a.*, u.name AS teacherName
      FROM Assignments a
@@ -47,7 +51,7 @@ export async function getAssignmentsForStudent(studentId) {
     [studentId]
   );
   
-  // For each assignment, get all group members
+  // For each assignment, fetch all group members for display
   for (const assignment of assignments) {
     const members = await db.all(
       `SELECT u.id, u.name 
@@ -89,6 +93,8 @@ export async function createAssignment({ teacherId, question }) {
 export async function updateAnswer(assignmentId, answer) {
   const db = await initDB();
   const submittedAt = new Date().toISOString();
+  
+  // Update answer only if assignment is still open
   await db.run(
     'UPDATE Assignments SET answer = ?, submittedAt = ? WHERE id = ? AND status = "open"',
     [answer, submittedAt, assignmentId]
@@ -104,6 +110,8 @@ export async function updateAnswer(assignmentId, answer) {
 export async function evaluateAssignment(assignmentId, score) {
   const db = await initDB();
   const evaluatedAt = new Date().toISOString();
+  
+  // Assign score and close the assignment
   await db.run(
     'UPDATE Assignments SET score = ?, evaluatedAt = ?, status = "closed" WHERE id = ?',
     [score, evaluatedAt, assignmentId]
@@ -118,6 +126,9 @@ export async function evaluateAssignment(assignmentId, score) {
  */
 export async function getStudentAverageScore(studentId) {
   const db = await initDB();
+  
+  // Calculate weighted average score for student across all evaluated assignments
+  // Each assignment contributes proportionally to group size (1/groupSize weight)
   const result = await db.get(
     `
     SELECT
@@ -206,6 +217,8 @@ export async function getClassStatusForTeacher(teacherId) {
  */
 export async function getAssignmentByIdWithMembers(id) {
   const db = await initDB();
+  
+  // Get assignment with teacher name
   const assignment = await db.get(
     `SELECT a.*, u.name AS teacherName
      FROM Assignments a
@@ -216,7 +229,7 @@ export async function getAssignmentByIdWithMembers(id) {
   
   if (!assignment) return null;
   
-  // Get group members
+  // Get all group members for this assignment
   const members = await db.all(
     `SELECT u.id, u.name 
      FROM GroupMembers gm 
@@ -226,6 +239,7 @@ export async function getAssignmentByIdWithMembers(id) {
     [assignment.id]
   );
   
+  // Format group members with consistent structure
   assignment.groupMembers = members.map(m => ({
     studentId: m.id,
     studentName: m.name

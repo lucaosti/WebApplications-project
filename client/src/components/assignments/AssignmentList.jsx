@@ -1,7 +1,13 @@
 import AssignmentCard from './AssignmentCard.jsx';
 
 /**
- * Assignment list component for displaying a list of assignments
+ * Assignment list component for displaying a list of assignments.
+ * Renders a titled section with assignment cards and handles empty states.
+ * 
+ * @param {Array} assignments - Array of assignment objects to display
+ * @param {string} title - Section title to display
+ * @param {string} emptyMessage - Message to show when no assignments exist
+ * @param {boolean} showScore - Whether to show scores in assignment cards
  */
 export default function AssignmentList({ 
   assignments, 

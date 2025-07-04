@@ -113,7 +113,9 @@ router.post('/assignments', isLoggedIn, isTeacher, async (req, res) => {
 });
 
 /**
+ * POST /api/assignments/:id/group
  * Assign students to a group (teacher only).
+ * Validates group size and assigns students to the specified assignment.
  */
 router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) => {
   const { studentIds } = req.body;
@@ -168,7 +170,9 @@ router.post('/assignments/:id/group', isLoggedIn, isTeacher, async (req, res) =>
 });
 
 /**
+ * PUT /api/assignments/:id/answer
  * Submit or update the answer (student only).
+ * Allows students to submit or modify their group's answer for an assignment.
  */
 router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) => {
   const { answer } = req.body;
@@ -213,7 +217,9 @@ router.put('/assignments/:id/answer', isLoggedIn, isStudent, async (req, res) =>
 });
 
 /**
+ * PUT /api/assignments/:id/evaluate
  * Evaluate and close an assignment (teacher only).
+ * Assigns a score and closes the assignment, preventing further modifications.
  */
 router.put('/assignments/:id/evaluate', isLoggedIn, isTeacher, async (req, res) => {
   const { score, expectedAnswer } = req.body;
@@ -262,7 +268,9 @@ router.put('/assignments/:id/evaluate', isLoggedIn, isTeacher, async (req, res) 
 });
 
 /**
+ * GET /api/student/average
  * Get average score for a student (used in student dashboard).
+ * Calculates weighted average across all evaluated assignments for the student.
  */
 router.get('/student/average', isLoggedIn, isStudent, async (req, res) => {
   console.log(`[API] GET /student/average - Student: ${req.user.name}`);
@@ -277,7 +285,9 @@ router.get('/student/average', isLoggedIn, isStudent, async (req, res) => {
 });
 
 /**
+ * GET /api/teacher/class-status
  * Get class status for teacher: students, open/closed counts and averages.
+ * Provides statistics for all students including assignment counts and scores.
  */
 router.get('/teacher/class-status', isLoggedIn, isTeacher, async (req, res) => {
   console.log(`[API] GET /teacher/class-status - Teacher: ${req.user.name}`);
@@ -292,6 +302,7 @@ router.get('/teacher/class-status', isLoggedIn, isTeacher, async (req, res) => {
 });
 
 /**
+ * POST /api/students/eligible
  * Get eligible students to be added to a group,
  * excluding those who already collaborated with any of the selected students twice (with the same teacher).
  * Used to dynamically update selection client-side.
@@ -332,7 +343,9 @@ router.post('/students/eligible', isLoggedIn, isTeacher, async (req, res) => {
 });
 
 /**
+ * GET /api/students
  * Get all students (teacher only) - used for creating assignments.
+ * Returns complete list of students for teacher assignment creation interface.
  */
 router.get('/students', isLoggedIn, isTeacher, async (req, res) => {
   console.log(`[API] GET /students - Teacher: ${req.user.name}`);
