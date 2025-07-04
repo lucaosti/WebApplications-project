@@ -13,68 +13,389 @@
 
 ## API Server
 
-- POST `/api/login`
-  - Request body: `{ name: string, password: string }`
-  - Response body (success): `{ id, name, role }`
-  - Response body (failure): `{ error: "Login failed" }` or specific error message
+### __User Authentication__
 
-- POST `/api/logout`
-  - No parameters
-  - Response body: `204 No Content`
+URL: `/api/login`
 
-- GET `/api/sessions/current`
-  - No parameters
-  - Response body: `{ id, name, role }` if logged in, or `401 Unauthorized` with `{ error: "Not authenticated" }`
+HTTP Method: POST
 
-- GET `/api/assignments` (for teacher)
-  - Requires session and teacher role
-  - Response body: array of assignments created by the teacher with group member details
+Description: Authenticate user using username and password.
 
-- GET `/api/assignments` (for student)
-  - Requires session and student role  
-  - Response body: array of assignments assigned to the student (group member) with teacher info
+Request body:
+```
+{
+  "name": "Matilde",
+  "password": "password"
+}
+```
 
-- POST `/api/assignments`
-  - Requires session and teacher role
-  - Request body: `{ question: string }`
-  - Response body: `{ id: number }` newly created assignment ID
-  - Returns 201 status code on success, or error if validation fails
+Response: `200 OK` (success) or `401 Unauthorized` (invalid credentials).
 
-- POST `/api/assignments/:id/group`
-  - Requires session and teacher role
-  - Request body: `{ studentIds: array of student IDs }`
-  - Response body: `204 No Content`, or error if validation fails
+Response body:
+```
+{
+  "id": 1,
+  "name": "Matilde",
+  "role": "teacher"
+}
+```
 
-- PUT `/api/assignments/:id/answer`
-  - Requires session and student role
-  - Request body: `{ answer: string }`
-  - Response body: updated assignment object, or error if not in group or assignment closed
+### __User Logout__
 
-- PUT `/api/assignments/:id/evaluate` 
-  - Requires session and teacher role
-  - Request body: `{ score: number (0-30), expectedAnswer: string }`
-  - Response body: updated assignment object, automatically closes assignment
+URL: `/api/logout`
 
-- GET `/api/assignments/:id`
-  - Requires authentication
-  - Response body: full assignment data if requester is creator or group member
+HTTP Method: POST
 
-- GET `/api/student/average`
-  - Requires session and student role
-  - Response body: `{ average: number }` weighted average score (rounded to 2 decimals)
+Description: Log out the current authenticated user and destroy session.
 
-- GET `/api/teacher/class-status`
-  - Requires session and teacher role
-  - Response body: array of per-student statistics with weighted averages
+Request body: None
 
-- GET `/api/students`
-  - Requires session and teacher role
-  - Response body: array of all students for assignment creation
+Response: `204 No Content` (success) or `500 Internal Server Error` (generic error).
 
-- POST `/api/students/eligible`
-  - Requires session and teacher role
-  - Request body: `{ selectedIds: array of student IDs }`
-  - Response body: eligible students (respects collaboration limits of max 2 times)
+### __Check Current Session__
+
+URL: `/api/sessions/current`
+
+HTTP Method: GET
+
+Description: Check if user is authenticated and return current user info.
+
+Response: `200 OK` (authenticated) or `401 Unauthorized` (not authenticated).
+
+Response body:
+```
+{
+  "id": 1,
+  "name": "Matilde",
+  "role": "teacher"
+}
+```
+
+### __Get All Assignments (Teacher)__
+
+URL: `/api/assignments`
+
+HTTP Method: GET
+
+Description: Get all assignments created by the authenticated teacher with group member details.
+
+Authentication: Requires session and teacher role.
+
+Response: `200 OK` (success) or `403 Forbidden` (not teacher) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+[
+  {
+    "id": 1,
+    "question": "Can you tell me about the important people in your life?",
+    "createdAt": "2025-03-05T00:00:00",
+    "answer": "My parents and my sister...",
+    "submittedAt": "2025-03-22T00:00:00",
+    "score": 19,
+    "evaluatedAt": "2025-06-27T00:00:00",
+    "status": "closed",
+    "groupMembers": [
+      { "id": 6, "name": "Ginevra" },
+      { "id": 7, "name": "Beatrice" }
+    ]
+  }
+]
+```
+
+### __Get All Assignments (Student)__
+
+URL: `/api/assignments`
+
+HTTP Method: GET
+
+Description: Get all assignments assigned to the authenticated student with teacher info.
+
+Authentication: Requires session and student role.
+
+Response: `200 OK` (success) or `403 Forbidden` (not student) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+[
+  {
+    "id": 1,
+    "teacherId": 1,
+    "teacherName": "Matilde",
+    "question": "Can you tell me about the important people in your life?",
+    "createdAt": "2025-03-05T00:00:00",
+    "answer": "My parents and my sister...",
+    "submittedAt": "2025-03-22T00:00:00",
+    "score": 19,
+    "evaluatedAt": "2025-06-27T00:00:00",
+    "status": "closed",
+    "groupMembers": [
+      { "id": 6, "name": "Ginevra" },
+      { "id": 7, "name": "Beatrice" }
+    ]
+  }
+]
+```
+
+### __Create New Assignment__
+
+URL: `/api/assignments`
+
+HTTP Method: POST
+
+Description: Create a new assignment with the given question.
+
+Authentication: Requires session and teacher role.
+
+Request body:
+```
+{
+  "question": "What are your career aspirations?"
+}
+```
+
+Response: `201 Created` (success) or `400 Bad Request` (validation error) or `403 Forbidden` (not teacher) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+{
+  "id": 15
+}
+```
+
+### __Assign Group to Assignment__
+
+URL: `/api/assignments/<id>/group`
+
+HTTP Method: POST
+
+Description: Assign a group of students to an existing assignment.
+
+Authentication: Requires session and teacher role.
+
+Request body:
+```
+{
+  "studentIds": [4, 5, 6]
+}
+```
+
+Response: `204 No Content` (success) or `404 Not Found` (assignment not found) or `403 Forbidden` (not teacher or not owner) or `500 Internal Server Error` (generic error).
+
+### __Submit Assignment Answer__
+
+URL: `/api/assignments/<id>/answer`
+
+HTTP Method: PUT
+
+Description: Submit or update the answer for an assignment (group collaboration).
+
+Authentication: Requires session and student role.
+
+Request body:
+```
+{
+  "answer": "I aspire to become a software engineer and work on innovative projects that make a positive impact."
+}
+```
+
+Response: `200 OK` (success) or `403 Forbidden` (not in group or assignment closed) or `404 Not Found` (assignment not found) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+{
+  "id": 15,
+  "teacherId": 1,
+  "question": "What are your career aspirations?",
+  "createdAt": "2025-07-04T10:30:00",
+  "answer": "I aspire to become a software engineer...",
+  "submittedAt": "2025-07-04T14:22:00",
+  "score": null,
+  "evaluatedAt": null,
+  "status": "open",
+  "groupMembers": [
+    { "id": 4, "name": "Alessandro" },
+    { "id": 5, "name": "Andrea" }
+  ]
+}
+```
+
+### __Evaluate Assignment__
+
+URL: `/api/assignments/<id>/evaluate`
+
+HTTP Method: PUT
+
+Description: Evaluate an assignment by assigning a score and expected answer. Automatically closes the assignment.
+
+Authentication: Requires session and teacher role.
+
+Request body:
+```
+{
+  "score": 25,
+  "expectedAnswer": "Students should demonstrate clear career goals and understanding of their chosen field."
+}
+```
+
+Response: `200 OK` (success) or `403 Forbidden` (not teacher or not owner) or `404 Not Found` (assignment not found) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+{
+  "id": 15,
+  "teacherId": 1,
+  "question": "What are your career aspirations?",
+  "createdAt": "2025-07-04T10:30:00",
+  "answer": "I aspire to become a software engineer...",
+  "submittedAt": "2025-07-04T14:22:00",
+  "score": 25,
+  "evaluatedAt": "2025-07-04T16:45:00",
+  "status": "closed",
+  "groupMembers": [
+    { "id": 4, "name": "Alessandro" },
+    { "id": 5, "name": "Andrea" }
+  ]
+}
+```
+
+### __Get Single Assignment__
+
+URL: `/api/assignments/<id>`
+
+HTTP Method: GET
+
+Description: Get detailed information about a specific assignment.
+
+Authentication: Requires authentication. Only assignment creator or group members can access.
+
+Response: `200 OK` (success) or `403 Forbidden` (not authorized to view) or `404 Not Found` (assignment not found) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+{
+  "id": 1,
+  "teacherId": 1,
+  "teacherName": "Matilde",
+  "question": "Can you tell me about the important people in your life?",
+  "createdAt": "2025-03-05T00:00:00",
+  "answer": "My parents and my sister have always been my biggest support...",
+  "submittedAt": "2025-03-22T00:00:00",
+  "score": 19,
+  "evaluatedAt": "2025-06-27T00:00:00",
+  "status": "closed",
+  "groupMembers": [
+    { "id": 6, "name": "Ginevra" },
+    { "id": 7, "name": "Beatrice" },
+    { "id": 10, "name": "Giulia" },
+    { "id": 13, "name": "Francesco" },
+    { "id": 14, "name": "Aurora" }
+  ]
+}
+```
+
+### __Get Student Average Score__
+
+URL: `/api/student/average`
+
+HTTP Method: GET
+
+Description: Get the weighted average score for the authenticated student.
+
+Authentication: Requires session and student role.
+
+Response: `200 OK` (success) or `403 Forbidden` (not student) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+{
+  "average": 22.75
+}
+```
+
+### __Get Class Status for Teacher__
+
+URL: `/api/teacher/class-status`
+
+HTTP Method: GET
+
+Description: Get statistics for all students in the teacher's classes, including assignment counts and weighted averages.
+
+Authentication: Requires session and teacher role.
+
+Response: `200 OK` (success) or `403 Forbidden` (not teacher) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+[
+  {
+    "id": 4,
+    "name": "Alessandro",
+    "openAssignments": 2,
+    "closedAssignments": 3,
+    "totalAssignments": 5,
+    "avgScore": 24.33
+  },
+  {
+    "id": 5,
+    "name": "Andrea",
+    "openAssignments": 1,
+    "closedAssignments": 4,
+    "totalAssignments": 5,
+    "avgScore": 21.25
+  }
+]
+```
+
+### __Get All Students__
+
+URL: `/api/students`
+
+HTTP Method: GET
+
+Description: Get list of all students for assignment creation.
+
+Authentication: Requires session and teacher role.
+
+Response: `200 OK` (success) or `403 Forbidden` (not teacher) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+[
+  { "id": 4, "name": "Alessandro" },
+  { "id": 5, "name": "Andrea" },
+  { "id": 6, "name": "Alice" },
+  { "id": 7, "name": "Anna" }
+]
+```
+
+### __Get Eligible Students__
+
+URL: `/api/students/eligible`
+
+HTTP Method: POST
+
+Description: Get list of students eligible to be added to a group, respecting collaboration limits (max 2 times with same teacher).
+
+Authentication: Requires session and teacher role.
+
+Request body:
+```
+{
+  "selectedIds": [4, 5]
+}
+```
+
+Response: `200 OK` (success) or `400 Bad Request` (invalid selectedIds) or `403 Forbidden` (not teacher) or `500 Internal Server Error` (generic error).
+
+Response body:
+```
+[
+  { "id": 6, "name": "Alice" },
+  { "id": 8, "name": "Aurora" },
+  { "id": 9, "name": "Beatrice" }
+]
+```
 
 ## Database Tables
 
