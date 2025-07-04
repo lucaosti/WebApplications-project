@@ -34,7 +34,6 @@ export function useDashboardData(endpoints) {
       
       setData(newData);
     } catch (err) {
-      console.error('Error loading dashboard data:', err);
       setError(err.message || 'Network error');
     } finally {
       setLoading(false);

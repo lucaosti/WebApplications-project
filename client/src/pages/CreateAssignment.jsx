@@ -25,14 +25,10 @@ export default function CreateAssignment() {
   useEffect(() => {
     const loadStudents = async () => {
       try {
-        console.log('Loading students...');
         const data = await apiFetch('/api/students');
-        console.log('Received students data:', data);
         const mappedStudents = data.map(s => ({ id: s.id, name: s.name }));
-        console.log('Mapped students:', mappedStudents);
         setAllStudents(mappedStudents);
       } catch (err) {
-        console.error('Error loading students:', err);
         setError('Failed to load students');
       } finally {
         setLoading(false);
@@ -46,8 +42,6 @@ export default function CreateAssignment() {
    * Update ineligible students based on current selection.
    */
   useEffect(() => {
-    console.log('Updating ineligible students. allStudents:', allStudents.length, 'selectedIds:', selectedIds);
-    
     if (allStudents.length === 0 || selectedIds.length === 0) {
       setIneligibleIds([]);
       return;
@@ -55,7 +49,6 @@ export default function CreateAssignment() {
 
     const updateIneligibility = async () => {
       try {
-        console.log('Fetching eligible students:', selectedIds);
         const eligibleStudents = await apiFetch('/api/students/eligible', {
           method: 'POST',
           body: { selectedIds },
@@ -65,10 +58,8 @@ export default function CreateAssignment() {
         const ineligible = allStudents
           .filter(s => !eligibleIds.includes(s.id) && !selectedIds.includes(s.id))
           .map(s => s.id);
-        console.log('Calculated ineligible IDs:', ineligible);
         setIneligibleIds(ineligible);
       } catch (err) {
-        console.error('Error fetching eligibility:', err);
         setError('Failed to fetch eligibility');
       }
     };

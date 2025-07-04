@@ -24,7 +24,7 @@ const app = express();
 app.use((req, res, next) => {
   if (req.url.startsWith('/api/')) {
     const timestamp = new Date().toISOString().slice(11, 19); // HH:mm:ss format
-    console.log(`[${timestamp}] HTTP ${req.method} ${req.url}`);
+    // Request logging removed
   }
   next();
 });
@@ -69,14 +69,12 @@ app.use('/api', assignmentsRouter);
  */
 app.get('/api/sessions/current', (req, res) => {
   if (req.isAuthenticated()) {
-    console.log(`[AUTH] Session check: user ${req.user.name} (${req.user.role}) is authenticated`);
     res.json({
       id: req.user.id,
       name: req.user.name,
       role: req.user.role
     });
   } else {
-    console.log('[AUTH] Session check: user not authenticated');
     res.status(401).json({ error: 'Not authenticated' });
   }
 });
@@ -94,11 +92,7 @@ app.use('/api/*', (_, res) => {
  * Logs error details and returns generic error response to client.
  */
 app.use((err, req, res, next) => {
-  console.error('[ERROR] Unhandled server error:', err.message);
-  // Show full stack trace only in development environment
-  if (process.env.NODE_ENV === 'development') {
-    console.error('[ERROR] Stack trace:', err.stack);
-  }
+  // Error logging removed
   res.status(500).json({ error: 'Internal Server Error' });
 });
 

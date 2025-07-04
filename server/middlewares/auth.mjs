@@ -29,7 +29,6 @@ export function isTeacher(req, res, next) {
     return next();
   }
 
-  console.log(`[AUTH] Access denied: user ${req.user?.name || 'Unknown'} (${role}) tried to access teacher-only resource`);
   return res.status(403).json({ error: 'Forbidden: teachers only' });
 }
 
@@ -48,6 +47,5 @@ export function isStudent(req, res, next) {
     return next();
   }
 
-  console.log(`[AUTH] Access denied: user ${req.user?.name || 'Unknown'} (${role}) tried to access student-only resource`);
   return res.status(403).json({ error: 'Forbidden: students only' });
 }

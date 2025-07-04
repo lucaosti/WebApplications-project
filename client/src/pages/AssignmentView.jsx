@@ -96,12 +96,10 @@ export default function AssignmentView() {
       if (err.status === 409) {
         // Answer was updated by students
         if (err.data && err.data.assignment) {
-          console.log('Conflict detected, updating assignment:', err.data.assignment);
           setAssignment(err.data.assignment);
           setAnswer(err.data.assignment.answer || '');
           setError('Answer was updated by students. Please review again.');
         } else {
-          console.error('Conflict detected but no assignment data in error:', err);
           setError('Answer was updated by students. Please review again.');
         }
       } else {

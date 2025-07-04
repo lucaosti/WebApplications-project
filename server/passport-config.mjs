@@ -18,21 +18,17 @@ function configurePassport(passport) {
         const user = await usersDao.getUserByName(username);
 
         if (!user) {
-          console.log(`[AUTH] Login failed: unknown username "${username}"`);
           return done(null, false, { message: 'Invalid credentials' });
         }
 
         // Verify password using bcrypt
         const match = await bcrypt.compare(password, user.passwordHash);
         if (!match) {
-          console.log(`[AUTH] Login failed: invalid password for user "${username}"`);
           return done(null, false, { message: 'Invalid credentials' });
         }
 
-        console.log(`[AUTH] Login successful: user ${username} (${user.role})`);
         return done(null, user);
       } catch (err) {
-        console.error('[AUTH] Error during authentication:', err.message);
         return done(err);
       }
     }
@@ -55,7 +51,6 @@ function configurePassport(passport) {
       const user = await usersDao.getUserById(id);
       done(null, user);
     } catch (err) {
-      console.error('[AUTH] Error deserializing user:', err.message);
       done(err, null);
     }
   });
