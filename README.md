@@ -285,11 +285,11 @@ Response body:
   "evaluatedAt": "2025-06-27T00:00:00",
   "status": "closed",
   "groupMembers": [
-    { "id": 6, "name": "Ginevra" },
-    { "id": 7, "name": "Beatrice" },
-    { "id": 10, "name": "Giulia" },
-    { "id": 13, "name": "Francesco" },
-    { "id": 14, "name": "Aurora" }
+    { "studentId": 6, "studentName": "Ginevra" },
+    { "studentId": 7, "studentName": "Beatrice" },
+    { "studentId": 10, "studentName": "Giulia" },
+    { "studentId": 13, "studentName": "Francesco" },
+    { "studentId": 14, "studentName": "Aurora" }
   ]
 }
 ```

@@ -337,8 +337,30 @@ input::placeholder, textarea::placeholder {
   100% { transform: rotate(360deg); }
 }
 
-.error-message {
+.error-message, .success-message {
   margin: var(--space-md) 0;
+  position: relative;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dismiss-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--success);
+  cursor: pointer;
+  padding: 0;
+  margin-left: var(--space-sm);
+  line-height: 1;
+}
+
+.dismiss-button:hover {
+  opacity: 0.7;
 }
 
 .assignment-section {

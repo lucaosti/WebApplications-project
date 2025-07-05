@@ -35,6 +35,7 @@ export async function apiFetch(url, options = {}) {
     const error = new Error(message);
     error.status = response.status;
     error.data = errorData; // Preserve full error data
+    
     throw error;
   }
 }

@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { useEffect, useState } from 'react';
 import { apiFetch } from '../api/client.js';
@@ -10,12 +10,14 @@ import { apiFetch } from '../api/client.js';
 export default function AssignmentView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
   const [assignment, setAssignment] = useState(null);
   const [answer, setAnswer] = useState('');
   const [score, setScore] = useState('');
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [isForbidden, setIsForbidden] = useState(false);
 
   // Load assignment details on mount
@@ -44,6 +46,19 @@ export default function AssignmentView() {
     loadAssignment();
   }, [id]);
 
+  // Handle success message from navigation state
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      // Set success message as persistent object for assignment creation
+      setSuccess({
+        message: location.state.successMessage,
+        persistent: true
+      });
+      // Clear the state to prevent the message from showing again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   /**
    * Handle answer submission by students.
    * Updates the assignment with the provided answer.
@@ -53,6 +68,7 @@ export default function AssignmentView() {
   async function handleSubmitAnswer(e) {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     try {
       const updated = await apiFetch(`/api/assignments/${id}/answer`, {
@@ -60,6 +76,11 @@ export default function AssignmentView() {
         body: { answer },
       });
       setAssignment(updated);
+      // Make student success message persistent like teacher evaluation
+      setSuccess({
+        message: 'Your answer has been saved successfully!',
+        persistent: true
+      });
     } catch (err) {
       if (err.status === 409) {
         // Assignment was closed before submission
@@ -85,6 +106,7 @@ export default function AssignmentView() {
   async function handleEvaluate(e) {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
     try {
       const updated = await apiFetch(`/api/assignments/${id}/evaluate`, {
@@ -92,6 +114,12 @@ export default function AssignmentView() {
         body: { score, expectedAnswer: assignment.answer || '' },
       });
       setAssignment(updated);
+      // For evaluation, we don't want auto-dismiss, so we set a flag
+      const successMessage = {
+        message: `Assignment evaluated successfully!`,
+        persistent: true
+      };
+      setSuccess(successMessage);
     } catch (err) {
       if (err.status === 409) {
         // Answer was updated by students
@@ -122,7 +150,10 @@ export default function AssignmentView() {
     return (
       <div className="assignment-view">
         <button 
-          onClick={() => navigate(user?.role === 'teacher' ? '/teacher' : '/student')} 
+          onClick={() => {
+            setSuccess(null); // Clear success message when navigating back
+            navigate(user?.role === 'teacher' ? '/teacher' : '/student');
+          }} 
           className="secondary-button mb-lg"
         >
           ← Back
@@ -144,7 +175,10 @@ export default function AssignmentView() {
   return (
     <div className="assignment-view">
       <button 
-        onClick={() => navigate(user?.role === 'teacher' ? '/teacher' : '/student')} 
+        onClick={() => {
+          setSuccess(null); // Clear success message when navigating back
+          navigate(user?.role === 'teacher' ? '/teacher' : '/student');
+        }} 
         className="secondary-button mb-lg"
       >
         ← Back
@@ -159,6 +193,42 @@ export default function AssignmentView() {
           color: '#dc2626'
         }}>
           {error}
+        </div>
+      )}
+
+      {/* Success message - unified persistent style for all cases */}
+      {success && (
+        <div className="success-banner" style={{
+          marginBottom: 'var(--space-lg)',
+          padding: 'var(--space-md)',
+          backgroundColor: 'var(--success-light)',
+          color: 'var(--success)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--success)',
+          fontWeight: '500',
+          width: '100%',
+          boxSizing: 'border-box',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span>{typeof success === 'string' ? success : success.message}</span>
+          <button 
+            onClick={() => setSuccess(null)} 
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '1.5rem',
+              color: 'var(--success)',
+              cursor: 'pointer',
+              padding: '0',
+              marginLeft: 'var(--space-sm)',
+              lineHeight: '1'
+            }}
+            aria-label="Dismiss success message"
+          >
+            ×
+          </button>
         </div>
       )}
 

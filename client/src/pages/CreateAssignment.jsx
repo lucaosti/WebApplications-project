@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
-import { useAuth } from '../auth/AuthContext.jsx';
 import ErrorMessage from '../components/common/ErrorMessage.jsx';
 import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
 import StudentSelector from '../components/forms/StudentSelector.jsx';
@@ -11,7 +10,6 @@ import StudentSelector from '../components/forms/StudentSelector.jsx';
  * and assign them a new question. Automatically filters invalid combinations.
  */
 export default function CreateAssignment() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [allStudents, setAllStudents] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -28,7 +26,7 @@ export default function CreateAssignment() {
         const data = await apiFetch('/api/students');
         const mappedStudents = data.map(s => ({ id: s.id, name: s.name }));
         setAllStudents(mappedStudents);
-      } catch (err) {
+      } catch {
         setError('Failed to load students');
       } finally {
         setLoading(false);
@@ -59,7 +57,7 @@ export default function CreateAssignment() {
           .filter(s => !eligibleIds.includes(s.id) && !selectedIds.includes(s.id))
           .map(s => s.id);
         setIneligibleIds(ineligible);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch eligibility');
       }
     };
@@ -117,7 +115,10 @@ export default function CreateAssignment() {
         body: { studentIds: selectedIds },
       });
 
-      navigate(`/assignment/${assignmentData.id}`);
+      // Redirect immediately with success message
+      navigate(`/assignment/${assignmentData.id}`, { 
+        state: { successMessage: 'Assignment created successfully!' }
+      });
     } catch (err) {
       setError(err.message || 'Failed to create assignment');
     } finally {

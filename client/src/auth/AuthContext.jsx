@@ -13,9 +13,23 @@ export function AuthProvider({ children }) {
 
   // Load session on first mount
   useEffect(() => {
-    apiFetch('/api/sessions/current')
-      .then((userData) => setUser(userData))
-      .catch(() => setUser(null));
+    const checkAuth = async () => {
+      // Skip authentication check if we're on the login page
+      if (window.location.pathname === '/login') {
+        setUser(null);
+        return;
+      }
+      
+      try {
+        const userData = await apiFetch('/api/sessions/current');
+        setUser(userData);
+      } catch {
+        // Silently handle authentication errors
+        setUser(null);
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   /**
