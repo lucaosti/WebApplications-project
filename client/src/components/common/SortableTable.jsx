@@ -38,7 +38,6 @@ export default function SortableTable({
                 key={column.field}
                 onClick={() => onSort(column.field)}
                 className="sortable-header"
-                style={{ cursor: 'pointer' }}
               >
                 {column.label}{getSortArrow(column.field)}
               </th>

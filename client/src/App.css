@@ -559,6 +559,15 @@ tr:hover {
   font-weight: 500;
 }
 
+/* Enhanced error styling for specific error blocks */
+.error-block {
+  padding: var(--space-md);
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #dc2626;
+}
+
 .success {
   background-color: var(--success-light);
   color: var(--success);
@@ -567,6 +576,45 @@ tr:hover {
   border-left: 4px solid var(--success);
   margin: var(--space-md) 0;
   font-weight: 500;
+}
+
+/* Success banner with dismiss button */
+.success-banner {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  background-color: var(--success-light);
+  color: var(--success);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--success);
+  font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Success banner dismiss button */
+.success-banner-dismiss {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--success);
+  cursor: pointer;
+  padding: 0;
+  margin-left: var(--space-sm);
+  line-height: 1;
+}
+
+.success-banner-dismiss:hover {
+  opacity: 0.7;
+}
+
+/* Read-only content containers */
+.readonly-content {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--bg-hover);
+  margin-top: var(--space-sm);
 }
 
 .warning {

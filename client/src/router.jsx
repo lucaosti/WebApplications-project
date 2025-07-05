@@ -116,8 +116,6 @@ export default function AppRouter() {
         }
       />
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
-      
       {/* Root route - redirect to appropriate dashboard */}
       <Route 
         path="/" 
@@ -131,6 +129,9 @@ export default function AppRouter() {
           </RequireAuth>
         } 
       />
+
+      {/* Catch-all route - redirect to root which handles authentication */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

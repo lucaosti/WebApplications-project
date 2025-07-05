@@ -159,13 +159,7 @@ export default function AssignmentView() {
           ← Back
         </button>
 
-        <div className="error mb-md" style={{ 
-          padding: 'var(--space-md)', 
-          backgroundColor: '#fef2f2', 
-          border: '1px solid #fecaca', 
-          borderRadius: '6px',
-          color: '#dc2626'
-        }}>
+        <div className="error error-block mb-md">
           {error}
         </div>
       </div>
@@ -185,46 +179,18 @@ export default function AssignmentView() {
       </button>
 
       {error && (
-        <div className="error mb-md" style={{ 
-          padding: 'var(--space-md)', 
-          backgroundColor: '#fef2f2', 
-          border: '1px solid #fecaca', 
-          borderRadius: '6px',
-          color: '#dc2626'
-        }}>
+        <div className="error error-block mb-md">
           {error}
         </div>
       )}
 
       {/* Success message - unified persistent style for all cases */}
       {success && (
-        <div className="success-banner" style={{
-          marginBottom: 'var(--space-lg)',
-          padding: 'var(--space-md)',
-          backgroundColor: 'var(--success-light)',
-          color: 'var(--success)',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--success)',
-          fontWeight: '500',
-          width: '100%',
-          boxSizing: 'border-box',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+        <div className="success-banner">
           <span>{typeof success === 'string' ? success : success.message}</span>
           <button 
             onClick={() => setSuccess(null)} 
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '1.5rem',
-              color: 'var(--success)',
-              cursor: 'pointer',
-              padding: '0',
-              marginLeft: 'var(--space-sm)',
-              lineHeight: '1'
-            }}
+            className="success-banner-dismiss"
             aria-label="Dismiss success message"
           >
             ×
@@ -246,11 +212,7 @@ export default function AssignmentView() {
             <label>Group Answer:</label>
             {assignment.status === 'closed' ? (
               <div>
-                <div className="form-container p-md" style={{ 
-                  backgroundColor: 'var(--bg-secondary)',
-                  border: '1px solid var(--bg-hover)',
-                  marginTop: 'var(--space-sm)'
-                }}>
+                <div className="form-container readonly-content p-md">
                   {answer || 'No answer submitted.'}
                 </div>
                 {assignment.score !== null && assignment.score !== undefined && (
@@ -283,10 +245,7 @@ export default function AssignmentView() {
           <div>
             <div className="form-group">
               <p><strong>Submitted Answer:</strong></p>
-              <div className="form-container p-md" style={{ 
-                backgroundColor: 'var(--bg-secondary)',
-                border: '1px solid var(--bg-hover)'
-              }}>
+              <div className="form-container readonly-content p-md">
                 {assignment.answer || 'No answer submitted yet.'}
               </div>
             </div>
