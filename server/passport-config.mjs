@@ -1,6 +1,6 @@
 import LocalStrategy from 'passport-local';
-import bcrypt from 'bcrypt';
 import * as usersDao from './dao/usersDao.mjs';
+import { verifyPassword } from './utils/password.mjs';
 
 /**
  * Configure Passport.js with the local authentication strategy
@@ -21,8 +21,8 @@ function configurePassport(passport) {
           return done(null, false, { message: 'Invalid credentials' });
         }
 
-        // Verify password using bcrypt
-        const match = await bcrypt.compare(password, user.passwordHash);
+        // Verify password using scrypt
+        const match = await verifyPassword(password, user.passwordHash);
         if (!match) {
           return done(null, false, { message: 'Invalid credentials' });
         }
