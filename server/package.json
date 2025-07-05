@@ -19,6 +19,6 @@
   "devDependencies": {
     "nodemon": "^3.1.0"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Luca Ostinelli <s347489@studenti.polito.it>",
+  "license": "MIT"
 }
