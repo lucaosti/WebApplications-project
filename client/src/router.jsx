@@ -1,11 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './auth/AuthContext';
-
-import LoginPage from './auth/LoginPage.jsx';
-import StudentDashboard from './pages/StudentDashboard.jsx';
-import TeacherDashboard from './pages/TeacherDashboard.jsx';
-import AssignmentView from './pages/AssignmentView.jsx';
-import CreateAssignment from './pages/CreateAssignment.jsx';
+import { useAuth, LoginPage } from './auth';
+import { StudentDashboard, TeacherDashboard, AssignmentView, CreateAssignment } from './pages';
 
 /**
  * Component to redirect logged-in users away from login page.

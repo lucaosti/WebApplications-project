@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext.jsx';
+import { useAuth } from '../auth';
 import { useEffect, useState } from 'react';
 import { apiFetch } from '../api/client.js';
 

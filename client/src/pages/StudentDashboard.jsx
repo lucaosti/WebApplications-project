@@ -1,9 +1,6 @@
-import { useAuth } from '../auth/AuthContext.jsx';
-import { useDashboardData } from '../hooks/useDashboardData.js';
-import ErrorMessage from '../components/common/ErrorMessage.jsx';
-import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
-import StatsGrid from '../components/common/StatsGrid.jsx';
-import AssignmentList from '../components/assignments/AssignmentList.jsx';
+import { useAuth } from '../auth';
+import { useDashboardData } from '../hooks';
+import { ErrorMessage, LoadingSpinner, StatsGrid, AssignmentList } from '../components';
 
 /**
  * StudentDashboard displays the assignments assigned to the logged-in student,

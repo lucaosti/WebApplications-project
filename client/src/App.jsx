@@ -1,5 +1,5 @@
 import './App.css';
-import Navigation from './components/Navigation.jsx';
+import { Navigation } from './components';
 import AppRouter from './router.jsx';
 
 /**

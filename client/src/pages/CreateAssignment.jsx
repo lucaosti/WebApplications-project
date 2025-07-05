@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
-import ErrorMessage from '../components/common/ErrorMessage.jsx';
-import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
-import StudentSelector from '../components/forms/StudentSelector.jsx';
+import { ErrorMessage, LoadingSpinner, StudentSelector } from '../components';
 
 /**
  * CreateAssignment allows a teacher to select a valid group of students

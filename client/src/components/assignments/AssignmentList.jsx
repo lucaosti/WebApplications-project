@@ -1,4 +1,4 @@
-import AssignmentCard from './AssignmentCard.jsx';
+import { AssignmentCard } from '../index.js';
 
 /**
  * Assignment list component for displaying a list of assignments.

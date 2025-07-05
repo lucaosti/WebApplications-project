@@ -1,4 +1,4 @@
-import { useAuth } from '../auth/AuthContext.jsx';
+import { useAuth } from '../auth';
 
 /**
  * Navigation component with logout functionality.

@@ -1,12 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext.jsx';
-import { useDashboardData } from '../hooks/useDashboardData.js';
-import { useTableSort } from '../hooks/useTableSort.js';
-import ErrorMessage from '../components/common/ErrorMessage.jsx';
-import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
-import StatsGrid from '../components/common/StatsGrid.jsx';
-import TeacherAssignmentList from '../components/assignments/TeacherAssignmentList.jsx';
-import SortableTable from '../components/common/SortableTable.jsx';
+import { useAuth } from '../auth';
+import { useDashboardData, useTableSort } from '../hooks';
+import { ErrorMessage, LoadingSpinner, StatsGrid, TeacherAssignmentList, SortableTable } from '../components';
 
 /**
  * TeacherDashboard component.

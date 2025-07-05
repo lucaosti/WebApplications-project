@@ -1,4 +1,4 @@
-import TeacherAssignmentCard from './TeacherAssignmentCard.jsx';
+import { TeacherAssignmentCard } from '../index.js';
 
 /**
  * Teacher-specific assignment list component.
