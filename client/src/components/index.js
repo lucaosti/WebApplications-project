@@ -6,7 +6,6 @@
 // Common components for UI elements and states
 export { default as LoadingSpinner } from './common/LoadingSpinner.jsx';
 export { default as ErrorMessage } from './common/ErrorMessage.jsx';
-export { default as SuccessMessage } from './common/SuccessMessage.jsx';
 export { default as StatsGrid } from './common/StatsGrid.jsx';
 export { default as SortableTable } from './common/SortableTable.jsx';
 
