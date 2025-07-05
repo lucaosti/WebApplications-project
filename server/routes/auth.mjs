@@ -47,7 +47,17 @@ router.post('/logout', (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Logout failed' });
     }
-    res.status(204).end();  // No content response - frontend handles success message
+    
+    // Destroy the session and clear the cookie
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to destroy session' });
+      }
+      
+      // Clear the session cookie
+      res.clearCookie('connect.sid'); // Default session cookie name
+      res.status(204).end();  // No content response
+    });
   });
 });
 
