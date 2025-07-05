@@ -36,20 +36,24 @@ function configurePassport(passport) {
 
   /**
    * Serialize user for session storage.
-   * Only store user ID in session for security and efficiency.
+   * Store complete user data (except password) in session for efficiency.
    */
   passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, { 
+      id: user.id, 
+      name: user.name, 
+      role: user.role 
+    });
   });
 
   /**
    * Deserialize user from session.
-   * Retrieve full user object from database using stored ID.
+   * Return user data directly from session without database call.
    */
-  passport.deserializeUser(async (id, done) => {
+  passport.deserializeUser(async (userData, done) => {
     try {
-      const user = await usersDao.getUserById(id);
-      done(null, user);
+      // Return user data directly from session - no DB call needed
+      done(null, userData);
     } catch (err) {
       done(err, null);
     }

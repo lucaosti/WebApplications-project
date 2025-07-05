@@ -2,7 +2,6 @@ import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
 import cors from 'cors';
-import SQLiteStoreFactory from 'connect-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,7 +13,6 @@ import assignmentsRouter from './routes/assignments.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SQLiteStore = SQLiteStoreFactory(session);
 const app = express();
 
 /**
@@ -38,12 +36,8 @@ app.use(cors({
 // Parse JSON request bodies
 app.use(express.json());
 
-// Configure sessions stored in SQLite DB
+// Configure sessions stored in memory (no database)
 app.use(session({
-  store: new SQLiteStore({
-    db: 'sessions.sqlite',
-    dir: path.join(__dirname, './db')
-  }),
   secret: 'session-secret',
   resave: false,
   saveUninitialized: false,
