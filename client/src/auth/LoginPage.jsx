@@ -15,16 +15,11 @@ export default function LoginPage() {
 
   // Apply special layout class for login page
   useEffect(() => {
-    const rootElement = document.getElementById('root');
-    if (rootElement) {
-      rootElement.classList.add('login-page-layout');
-    }
+    document.body.classList.add('login-page-layout');
     
     // Cleanup when component unmounts
     return () => {
-      if (rootElement) {
-        rootElement.classList.remove('login-page-layout');
-      }
+      document.body.classList.remove('login-page-layout');
     };
   }, []);
 

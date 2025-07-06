@@ -98,7 +98,7 @@ body, html {
 /* ===================
    LOGIN LAYOUT
    =================== */
-.login-page-layout {
+body.login-page-layout #root {
   max-width: none !important;
   margin: 0 !important;
   background-color: var(--bg-primary) !important;
@@ -114,7 +114,7 @@ body, html {
   align-items: center !important;
 }
 
-.login-page-layout .form-container {
+body.login-page-layout .form-container {
   background-color: var(--bg-secondary);
   border-radius: var(--radius-lg);
   padding: var(--space-xxl);
